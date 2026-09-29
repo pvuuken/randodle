@@ -1,14 +1,13 @@
-import { COUNTRY_NAMES, COUNTRY_NAMES_NL, COUNTRY_PUZZLES, type CountryPuzzle } from "@/data/countries";
+import { COUNTRY_PUZZLES, type CountryPuzzle } from "@/data/countries";
 import {
   createState,
   isComplete,
-  normalise,
   pushAttempt,
   puzzleForDay,
   standardShare,
 } from "@/engine/gameEngine";
 import { standardScore } from "@/services/scoreService";
-import { isAnswerCorrect } from "@/services/answerService";
+import { countryByCode, countrySuggestions, resolveCountry } from "@/services/countryService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
 import { ClueList } from "@/components/game/ClueList";
@@ -36,11 +35,7 @@ const TEXT = {
   },
 };
 
-const displayName = (name: string, lang: Language) => (lang === "nl" ? (COUNTRY_NAMES_NL[name] ?? name) : name);
-
-/** Maps a guess in any supported language to the English name used by the data. */
-const toEnglish = (guess: string) =>
-  COUNTRY_NAMES.find((n) => normalise(n) === guess || normalise(COUNTRY_NAMES_NL[n] ?? "") === guess);
+const displayName = (code: string, lang: Language) => countryByCode(code)?.name[lang] ?? code;
 
 const ID = "country";
 const MAX_ATTEMPTS = 5;
@@ -56,7 +51,7 @@ function CountryPlay({ puzzle, state, onSubmit }: GamePlayProps<CountryPuzzle>) 
       <GuessForm
         label={tx.label}
         placeholder={tx.placeholder}
-        suggestions={COUNTRY_NAMES.map((n) => displayName(n, lang))}
+        suggestions={countrySuggestions(lang)}
         disabled={done}
         helpText={tx.help}
         onSubmit={onSubmit}
@@ -96,9 +91,9 @@ export const countryGame: GameModule<CountryPuzzle> = {
   submitAnswer(state, puzzle, answer) {
     const lang = getLanguage();
     const tx = TEXT[lang];
-    const english = toEnglish(normalise(answer));
-    const guess = normalise(english ?? answer);
-    if (isAnswerCorrect(english ?? answer, puzzle.answer, puzzle.aliases)) {
+    // Name or alias in any language resolves to one stable country code.
+    const guessed = resolveCountry(answer);
+    if (guessed?.code === puzzle.countryCode) {
       return {
         state: pushAttempt(state, { value: answer, tone: "correct", feedback: "Correct" }),
         message: tx.correct,
@@ -107,7 +102,7 @@ export const countryGame: GameModule<CountryPuzzle> = {
 
     // "Close" = right continent, which is a spoiler-free nudge.
     const continent = continentOf(puzzle);
-    const guessedPuzzle = COUNTRY_PUZZLES.find((p) => normalise(p.answer) === guess);
+    const guessedPuzzle = COUNTRY_PUZZLES.find((p) => p.countryCode === guessed?.code);
     const sameContinent = Boolean(guessedPuzzle && continentOf(guessedPuzzle) === continent);
 
     const next = pushAttempt(state, {
@@ -119,14 +114,14 @@ export const countryGame: GameModule<CountryPuzzle> = {
       state: next,
       message:
         next.status === "lost"
-          ? tx.lost(displayName(puzzle.answer, lang))
+          ? tx.lost(displayName(puzzle.countryCode, lang))
           : sameContinent
             ? tx.close
             : tx.wrong,
     };
   },
 
-  getLossAnswer: (puzzle) => displayName(puzzle.answer, getLanguage()),
+  getLossAnswer: (puzzle) => displayName(puzzle.countryCode, getLanguage()),
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,
