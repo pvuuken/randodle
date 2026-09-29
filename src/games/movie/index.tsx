@@ -48,7 +48,7 @@ function MoviePlay({ puzzle, state, onSubmit }: GamePlayProps<MoviePuzzle>) {
   const tx = TEXT[useLanguage()];
   return (
     <div className="space-y-6">
-      <PosterReveal src={puzzle.posterUrl} scale={revealScale(state)} alt={tx.poster} fallback={tx.noPoster} />
+      <PosterReveal src={puzzle.posterUrl} mask={puzzle.posterMask} scale={revealScale(state)} alt={tx.poster} fallback={tx.noPoster} />
       <AttemptCounter state={state} />
       <GuessForm
         label={tx.label}

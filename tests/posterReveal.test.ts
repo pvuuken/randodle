@@ -38,3 +38,31 @@ test("poster URL comes from posterPath", () => {
   expect(p.posterUrl).toBe(moviePosterUrl(MOVIE_LIST[0]));
   expect(p.posterUrl).toContain(MOVIE_LIST[0].posterPath);
 });
+
+import { posterMaskStyle } from "../src/games/movie/PosterReveal";
+import { MOVIE_PUZZLES } from "../src/data/movies";
+
+test("no posterMask → no mask", () => {
+  expect(posterMaskStyle(undefined)).toBeNull();
+  expect(posterMaskStyle({ enabled: false, position: "top", size: 20 })).toBeNull();
+  const plain = MOVIE_LIST.find((m) => !m.posterMask)!;
+  expect(MOVIE_PUZZLES.find((p) => p.id === plain.id)!.posterMask).toBeUndefined();
+});
+test("enabled posterMask is passed from data to puzzle", () => {
+  const sw = MOVIE_PUZZLES.find((p) => p.id === "snow-white-and-the-seven-dwarfs-1937")!;
+  expect(sw.posterMask).toEqual({ enabled: true, position: "bottom", size: 35 });
+});
+test("all four positions are supported", () => {
+  expect(posterMaskStyle({ enabled: true, position: "bottom", size: 25 })).toMatchObject({ bottom: 0, left: 0, right: 0, height: "25%" });
+  expect(posterMaskStyle({ enabled: true, position: "top", size: 20 })).toMatchObject({ top: 0, height: "20%" });
+  expect(posterMaskStyle({ enabled: true, position: "left", size: 30 })).toMatchObject({ left: 0, top: 0, bottom: 0, width: "30%" });
+  expect(posterMaskStyle({ enabled: true, position: "right", size: 15 })).toMatchObject({ right: 0, width: "15%" });
+});
+test("mask does not affect the zoom", () => {
+  const style = posterMaskStyle({ enabled: true, position: "bottom", size: 25 })!;
+  expect(style.transform).toBeUndefined();
+  const masked = MOVIE_PUZZLES.find((m) => m.posterMask)!;
+  let s: any = movieGame.initialize(masked); const seen = [revealScale(s)];
+  for (let i = 0; i < 4; i++) { s = movieGame.submitAnswer(s, masked, "Definitely Not A Film").state; seen.push(revealScale(s)); }
+  expect(seen).toEqual([5, 4, 3, 2, 1]);
+});

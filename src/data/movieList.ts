@@ -13,10 +13,18 @@ export interface Movie {
   year: number;
   tmdbId: number;
   posterPath: string;
+  /** Optional overlay hiding the title printed on the poster; size = % of that dimension. */
+  posterMask?: PosterMask;
+}
+
+export interface PosterMask {
+  enabled: boolean;
+  position: "top" | "bottom" | "left" | "right";
+  size: number;
 }
 
 export const MOVIE_LIST: Movie[] = [
-  {"id": "snow-white-and-the-seven-dwarfs-1937", "title": {"en": "Snow White and the Seven Dwarfs", "nl": "Sneeuwwitje en de Zeven Dwergen"}, "year": 1937, "tmdbId": 408, "posterPath": "/3VAHfuNb6Z7UiW12iYKANSPBl8m.jpg"},
+  {"id": "snow-white-and-the-seven-dwarfs-1937", "title": {"en": "Snow White and the Seven Dwarfs", "nl": "Sneeuwwitje en de Zeven Dwergen"}, "year": 1937, "tmdbId": 408, "posterPath": "/3VAHfuNb6Z7UiW12iYKANSPBl8m.jpg", "posterMask": {"enabled": true, "position": "bottom", "size": 35}},
   {"id": "the-wizard-of-oz-1939", "title": {"en": "The Wizard of Oz", "nl": "De Tovenaar van Oz"}, "year": 1939, "tmdbId": 630, "posterPath": "/uCC3j4pV9eOZwzDUWp2ilbcTf1f.jpg"},
   {"id": "gone-with-the-wind-1939", "title": {"en": "Gone with the Wind", "nl": "Gone with the Wind"}, "year": 1939, "tmdbId": 770, "posterPath": "/lNz2Ow0wGCAvzckW7EOjE03KcYv.jpg"},
   {"id": "casablanca-1942", "title": {"en": "Casablanca", "nl": "Casablanca"}, "year": 1942, "tmdbId": 289, "posterPath": "/lGCEKlJo2CnWydQj7aamY7s1S7Q.jpg"},
@@ -32,9 +40,9 @@ export const MOVIE_LIST: Movie[] = [
   {"id": "the-good-the-bad-and-the-ugly-1966", "title": {"en": "The Good, the Bad and the Ugly", "nl": "The Good, the Bad and the Ugly"}, "year": 1966, "tmdbId": 429, "posterPath": "/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg"},
   {"id": "the-jungle-book-1967", "title": {"en": "The Jungle Book", "nl": "Jungle Boek"}, "year": 1967, "tmdbId": 9325, "posterPath": "/yN1kuupnPTLUprgfvC5WapgrxG4.jpg"},
   {"id": "2001-a-space-odyssey-1968", "title": {"en": "2001: A Space Odyssey", "nl": "2001: A Space Odyssey"}, "year": 1968, "tmdbId": 62, "posterPath": "/ve72VxNqjGM69Uky4WTo2bK6rfq.jpg"},
-  {"id": "the-godfather-1972", "title": {"en": "The Godfather", "nl": "The Godfather"}, "year": 1972, "tmdbId": 238, "posterPath": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg"},
+  {"id": "the-godfather-1972", "title": {"en": "The Godfather", "nl": "The Godfather"}, "year": 1972, "tmdbId": 238, "posterPath": "/3bhkrj58Vtu7enYsRolD1fZdja1.jpg", "posterMask": {"enabled": true, "position": "bottom", "size": 25}},
   {"id": "the-exorcist-1973", "title": {"en": "The Exorcist", "nl": "The Exorcist"}, "year": 1973, "tmdbId": 9552, "posterPath": "/5x0CeVHJI8tcDx8tUUwYHQSNILq.jpg"},
-  {"id": "jaws-1975", "title": {"en": "Jaws", "nl": "Jaws"}, "year": 1975, "tmdbId": 578, "posterPath": "/lxM6kqilAdpdhqUl2biYp5frUxE.jpg"},
+  {"id": "jaws-1975", "title": {"en": "Jaws", "nl": "Jaws"}, "year": 1975, "tmdbId": 578, "posterPath": "/lxM6kqilAdpdhqUl2biYp5frUxE.jpg", "posterMask": {"enabled": true, "position": "top", "size": 22}},
   {"id": "one-flew-over-the-cuckoo-s-nest-1975", "title": {"en": "One Flew Over the Cuckoo's Nest", "nl": "One Flew Over the Cuckoo's Nest"}, "year": 1975, "tmdbId": 510, "posterPath": "/kjWsMh72V6d8KRLV4EOoSJLT1H7.jpg"},
   {"id": "monty-python-and-the-holy-grail-1975", "title": {"en": "Monty Python and the Holy Grail", "nl": "Monty Python and the Holy Grail"}, "year": 1975, "tmdbId": 762, "posterPath": "/7nTkHjETdGMYK1phHwDbPsrzbYl.jpg"},
   {"id": "rocky-1976", "title": {"en": "Rocky", "nl": "Rocky"}, "year": 1976, "tmdbId": 1366, "posterPath": "/xSI0dbKLDETwhiVUy6hGE8KXUln.jpg"},
@@ -85,7 +93,7 @@ export const MOVIE_LIST: Movie[] = [
   {"id": "independence-day-1996", "title": {"en": "Independence Day", "nl": "Independence Day"}, "year": 1996, "tmdbId": 602, "posterPath": "/p0BPQGSPoSa8Ml0DAf2mB2kCU0R.jpg"},
   {"id": "mission-impossible-1996", "title": {"en": "Mission: Impossible", "nl": "Mission: Impossible"}, "year": 1996, "tmdbId": 954, "posterPath": "/l5uxY5m5OInWpcExIpKG6AR3rgL.jpg"},
   {"id": "scream-1996", "title": {"en": "Scream", "nl": "Scream"}, "year": 1996, "tmdbId": 4232, "posterPath": "/lr9ZIrmuwVmZhpZuTCW8D9g0ZJe.jpg"},
-  {"id": "titanic-1997", "title": {"en": "Titanic", "nl": "Titanic"}, "year": 1997, "tmdbId": 597, "posterPath": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg"},
+  {"id": "titanic-1997", "title": {"en": "Titanic", "nl": "Titanic"}, "year": 1997, "tmdbId": 597, "posterPath": "/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg", "posterMask": {"enabled": true, "position": "bottom", "size": 32}},
   {"id": "men-in-black-1997", "title": {"en": "Men in Black", "nl": "Men in Black"}, "year": 1997, "tmdbId": 607, "posterPath": "/uLOmOF5IzWoyrgIF5MfUnh5pa1X.jpg"},
   {"id": "the-fifth-element-1997", "title": {"en": "The Fifth Element", "nl": "Le Cinquième Élément"}, "year": 1997, "tmdbId": 18, "posterPath": "/fPtlCO1yQtnoLHOwKtWz7db6RGU.jpg"},
   {"id": "life-is-beautiful-1997", "title": {"en": "Life Is Beautiful", "nl": "La vita è bella"}, "year": 1997, "tmdbId": 637, "posterPath": "/74hLDKjD5aGYOotO6esUVaeISa2.jpg"},
