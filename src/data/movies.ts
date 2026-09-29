@@ -14,7 +14,7 @@ export interface MoviePuzzle extends Puzzle {
 export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
   id: m.id,
   answer: m.title.en,
-  aliases: m.title.nl !== m.title.en ? [m.title.nl] : undefined,
+  aliases: m.title.nl !== m.title.en ? [m.title.nl] : [],
   title: m.title,
   posterUrl: moviePosterUrl(m),
 }));

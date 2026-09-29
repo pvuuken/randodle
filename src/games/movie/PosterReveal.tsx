@@ -8,7 +8,7 @@ export const REVEAL_SCALES = [3, 2.5, 2, 1.5, 1.15, 1] as const;
 export function revealScale(state: GameState): number {
   if (state.status === "lost") return 1;
   const wrong = state.attempts.filter((a) => a.tone !== "correct").length;
-  return REVEAL_SCALES[Math.min(wrong, REVEAL_SCALES.length - 1)];
+  return REVEAL_SCALES[Math.min(wrong, REVEAL_SCALES.length - 1)] ?? 1;
 }
 
 export function PosterReveal({ src, scale, alt, fallback }: { src: string; scale: number; alt: string; fallback: string }) {
