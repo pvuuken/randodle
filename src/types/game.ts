@@ -76,6 +76,8 @@ export interface GameModule<P extends Puzzle = Puzzle> {
   getPuzzle(puzzleId: string): P | undefined;
   /** Deterministic puzzle for a given day index. */
   getPuzzleForDay(dayIndex: number): P;
+  /** Optional spoiler text shown only in test mode. */
+  getAnswerKey?(puzzle: P): string;
 
   initialize(puzzle: P): GameState;
   submitAnswer(state: GameState, puzzle: P, answer: string): GameResult;

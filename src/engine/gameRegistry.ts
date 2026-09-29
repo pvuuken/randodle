@@ -1,4 +1,5 @@
 import { countryGame } from "@/games/country";
+import { flagGame } from "@/games/flag";
 import { higherLowerGame } from "@/games/higher-lower";
 import { movieGame } from "@/games/movie";
 import { yearGame } from "@/games/year";
@@ -13,10 +14,17 @@ export const GAME_REGISTRY: Record<string, RegisteredGame> = {
   [countryGame.id]: countryGame,
   [yearGame.id]: yearGame,
   [higherLowerGame.id]: higherLowerGame,
+  [flagGame.id]: flagGame,
 };
 
 /** Rotation order used by the daily schedule. */
-export const GAME_ROTATION: string[] = [movieGame.id, countryGame.id, yearGame.id, higherLowerGame.id];
+export const GAME_ROTATION: string[] = [
+  movieGame.id,
+  countryGame.id,
+  yearGame.id,
+  higherLowerGame.id,
+  flagGame.id,
+];
 
 export function getGame(id: string): RegisteredGame | undefined {
   return GAME_REGISTRY[id];
