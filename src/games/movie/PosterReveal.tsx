@@ -2,7 +2,7 @@ import { useState } from "react";
 import type { GameState } from "@/types/game";
 
 /** Zoom per number of wrong guesses; the last step shows the full poster. */
-export const REVEAL_SCALES = [3, 2.5, 2, 1.5, 1.15, 1] as const;
+export const REVEAL_SCALES = [5, 4, 3, 2, 1] as const;
 
 /** Derived purely from the session's attempts — no separate counter. */
 export function revealScale(state: GameState): number {
