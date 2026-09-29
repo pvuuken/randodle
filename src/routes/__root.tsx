@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { SiteHeader } from "@/components/randodle/SiteHeader";
 
 function NotFoundComponent() {
   return (
@@ -123,8 +124,16 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <SiteHeader />
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <div className="flex-1">
+          <Outlet />
+        </div>
+        <footer className="border-t border-border/60 px-5 py-6 text-center text-xs text-muted-foreground">
+          Randodle · one puzzle a day · demo content for v0.1
+        </footer>
+      </div>
     </QueryClientProvider>
   );
 }
