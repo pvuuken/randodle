@@ -68,3 +68,38 @@ describe("Higher/Lower", () => {
     }
   });
 });
+
+import { HIGHER_LOWER_COUNTRIES } from "@/data/higherLower/countries";
+import { COUNTRIES } from "@/data/countryList";
+
+describe("Higher/Lower production countries", () => {
+  test("exactly the 195 Randodle countries, unique ids", () => {
+    expect(HIGHER_LOWER_COUNTRIES.length).toBe(195);
+    expect(unique(HIGHER_LOWER_COUNTRIES.map((c) => c.id))).toBe(true);
+    expect(new Set(HIGHER_LOWER_COUNTRIES.map((c) => c.id))).toEqual(new Set(COUNTRIES.map((c) => c.code)));
+  });
+  test("names match country list; positive population and area; real sources", () => {
+    for (const c of HIGHER_LOWER_COUNTRIES) {
+      const ref = COUNTRIES.find((x) => x.code === c.id)!;
+      expect(c.name.en).toBe(ref.name.en);
+      expect(c.name.nl).toBe(ref.name.nl);
+      expect(c.metrics.population).toBeGreaterThan(0);
+      expect(c.metrics.area).toBeGreaterThan(0);
+      expect(c.source.url).toMatch(/^https:\/\//);
+      expect(c.source.url).not.toContain("example.invalid");
+      expect(c.metadata?.areaDefinition).toBe("total");
+    }
+  });
+  test("population reference year consistent (World Bank 2023; Holy See only exception)", () => {
+    const other = HIGHER_LOWER_COUNTRIES.filter((c) => c.source.referenceDate !== "2023").map((c) => c.id);
+    expect(other).toEqual(["VA"]);
+  });
+  test("daily puzzles only use real countries", () => {
+    const ids = new Set(HIGHER_LOWER_COUNTRIES.map((c) => c.id));
+    for (const p of HIGHER_LOWER_PUZZLES) {
+      expect(p.datasetId).toBe("countries");
+      expect(["population", "area"]).toContain(p.metricId);
+      for (const id of p.chain) expect(ids.has(id)).toBe(true);
+    }
+  });
+});
