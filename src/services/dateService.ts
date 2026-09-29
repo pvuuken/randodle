@@ -1,34 +1,39 @@
-/** Local-day helpers shared by the daily schedule, streak and countdown. */
+/**
+ * Randodle-day helpers shared by the daily schedule, streak and countdown.
+ * UTC is the canonical Randodle timezone: every player gets the same day key.
+ */
 
-export const RANDODLE_EPOCH = new Date(2026, 0, 1);
+const DAY_MS = 86_400_000;
 
+/** Randodle #001 = 2026-01-01 (UTC). */
+export const RANDODLE_EPOCH = Date.UTC(2026, 0, 1);
+
+/** Canonical Randodle date key, e.g. "2026-10-01" (UTC). */
 export function dayKey(date: Date = new Date()): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
 }
 
 export function dayIndex(date: Date = new Date()): number {
-  const start = new Date(RANDODLE_EPOCH.getFullYear(), RANDODLE_EPOCH.getMonth(), RANDODLE_EPOCH.getDate());
-  const today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  return Math.round((today.getTime() - start.getTime()) / 86_400_000);
+  const today = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  return Math.round((today - RANDODLE_EPOCH) / DAY_MS);
 }
 
-function parseDayKey(key: string): Date {
+function parseDayKey(key: string): number {
   const [y = 1970, m = 1, d = 1] = key.split("-").map(Number);
-  return new Date(y, m - 1, d);
+  return Date.UTC(y, m - 1, d);
 }
 
 export function daysBetween(aKey: string, bKey: string): number {
-  const a = parseDayKey(aKey).getTime();
-  const b = parseDayKey(bKey).getTime();
-  return Math.round((b - a) / 86_400_000);
+  return Math.round((parseDayKey(bKey) - parseDayKey(aKey)) / DAY_MS);
 }
 
+/** Milliseconds until the next UTC Randodle day begins. */
 export function msUntilTomorrow(now: Date = new Date()): number {
-  const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  return midnight.getTime() - now.getTime();
+  const next = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+  return next - now.getTime();
 }
 
 export function formatDuration(ms: number): string {

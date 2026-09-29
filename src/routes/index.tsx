@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { getDailyGame } from "@/engine/dailyGameService";
+import { useEffect, useState } from "react";
+import { useDailyGame } from "@/hooks/useDailyGame";
 import { streakService } from "@/services/streakService";
 import { sessionService } from "@/services/sessionService";
 import { StreakBadge } from "@/components/randodle/StreakBadge";
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const daily = useMemo(() => getDailyGame(), []);
+  const daily = useDailyGame();
   const [streak, setStreak] = useState(0);
   const [played, setPlayed] = useState(false);
 
