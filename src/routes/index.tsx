@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { useDailyGame } from "@/hooks/useDailyGame";
+import { dayIndex, dayKey } from "@/services/dateService";
 import { streakService } from "@/services/streakService";
 import { sessionService } from "@/services/sessionService";
-import { StreakBadge } from "@/components/randodle/StreakBadge";
 import { Countdown } from "@/components/randodle/Countdown";
 
 export const Route = createFileRoute("/")({
@@ -13,69 +12,75 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Randodle is a daily game platform. Every day brings a different type of puzzle — movie, country, year and more. Build your streak.",
+          "Randodle is a daily game platform. Every day brings a different type of puzzle — and you never know which one. Build your streak.",
       },
       { property: "og:title", content: "Randodle — A different game every day" },
       {
         property: "og:description",
-        content: "You never know what today's challenge will be. One new game, every day.",
+        content: "You never know what today's game will be. One new game, every day.",
       },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Home,
 });
 
+/** Mystery homepage: shows today's edition only — never which game it is. */
 function Home() {
-  const daily = useDailyGame();
+  const [edition, setEdition] = useState<number | null>(null);
   const [streak, setStreak] = useState(0);
   const [played, setPlayed] = useState(false);
 
   useEffect(() => {
+    const key = dayKey();
+    setEdition(Math.max(1, dayIndex() + 1));
     setStreak(streakService.displayStreak());
-    const session = sessionService.load(daily.dayKey);
+    const session = sessionService.load(key);
     setPlayed(Boolean(session && session.state.status !== "playing"));
-  }, [daily.dayKey]);
+  }, []);
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-5 pb-20 pt-10 sm:pt-16">
+    <div className="mx-auto w-full max-w-3xl px-5 pb-20 pt-8 sm:pt-14">
       <section className="text-center">
-        <span className="animate-float inline-block text-6xl" aria-hidden="true">
-          🎲
-        </span>
-        <h1 className="mt-4 font-display text-5xl font-extrabold uppercase tracking-[0.06em] text-gradient sm:text-7xl">
+        <h1 className="font-display text-5xl font-extrabold uppercase tracking-[0.06em] text-gradient sm:text-7xl">
           Randodle
         </h1>
-        <p className="mt-3 text-lg font-semibold text-foreground sm:text-xl">A different game every day.</p>
-        <p className="mt-1 text-sm text-muted-foreground">You never know what today's challenge will be.</p>
-        {streak > 0 ? (
-          <div className="mt-5">
-            <StreakBadge days={streak} />
-          </div>
-        ) : null}
+        <p className="mt-3 text-xl font-bold text-foreground sm:text-2xl">A different game every day.</p>
+        <p className="mt-1 text-sm text-muted-foreground">You never know what today's game will be.</p>
+        <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-warning/40 bg-warning/10 px-4 py-1.5 text-sm font-bold uppercase tracking-[0.12em] text-warning">
+          <span aria-hidden="true">🔥</span>
+          {streak > 0 ? `${streak} day streak` : "Start your streak today"}
+        </p>
       </section>
 
-      <section className="surface-card animate-rise mt-10 p-6 text-center sm:p-8">
+      <section className="surface-card animate-rise mt-8 p-6 text-center sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Today's Randodle · #{String(daily.edition).padStart(3, "0")}
+          Today's Randodle{edition ? ` · #${String(edition).padStart(3, "0")}` : ""}
         </p>
-        <p className="mt-4 text-5xl" aria-hidden="true">
-          {daily.game.emoji}
+        <p
+          aria-hidden="true"
+          className="mx-auto mt-5 flex h-24 w-24 items-center justify-center rounded-2xl border border-border bg-muted font-display text-6xl font-extrabold text-accent"
+        >
+          ?
         </p>
-        <h2 className="mt-3 font-display text-3xl font-extrabold uppercase tracking-tight text-foreground sm:text-4xl">
-          {daily.game.name}
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground">{daily.game.prompt}</p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          {played ? "You've played today's game." : "Today's game is a mystery until you press play."}
+        </p>
 
         <Link
           to="/play"
-          className="mt-7 inline-flex min-h-13 w-full items-center justify-center rounded-xl bg-accent px-8 text-base font-bold uppercase tracking-[0.12em] text-accent-foreground shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] sm:w-auto"
+          className="mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-xl bg-accent px-8 text-base font-bold uppercase tracking-[0.12em] text-accent-foreground shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] sm:w-auto"
         >
-          {played ? "See today's result" : "Play today"}
+          {played ? "See today's result →" : "Play today's game →"}
         </Link>
       </section>
 
-      <section className="mt-10">
+      <section className="surface-card mt-6 p-5">
         <Countdown label="New game in" />
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          Come back tomorrow for a completely different game.
+        </p>
       </section>
     </div>
   );
