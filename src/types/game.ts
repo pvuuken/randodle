@@ -86,6 +86,5 @@ export interface GameModule<P extends Puzzle = Puzzle> {
 }
 
 /** Type-erased module as stored in the registry. */
-export type AnyGameModule = GameModule<never> extends never
-  ? never
-  : GameModule<Puzzle>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type RegisteredGame = GameModule<any>;
