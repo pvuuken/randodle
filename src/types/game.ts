@@ -69,6 +69,8 @@ export interface GameModule<P extends Puzzle = Puzzle> {
   /** How-to-play summary. */
   howToPlay: string;
   maxAttempts: number;
+  /** Highest possible score shown on the result screen. Defaults to 100. */
+  maxScore?: number;
 
   puzzles: P[];
   getPuzzle(puzzleId: string): P | undefined;
