@@ -1,6 +1,7 @@
 import type { Puzzle, RegisteredGame } from "@/types/game";
 import { useGameSession } from "@/hooks/useGameSession";
 import { ResultScreen } from "./ResultScreen";
+import { localizeGame, useTranslation } from "@/i18n";
 
 interface GameHostProps {
   edition: number;
@@ -20,6 +21,8 @@ interface GameHostProps {
 export function GameHost({ edition, dayKey, game, puzzle, practice = false, toolbar }: GameHostProps) {
   const session = useGameSession({ game, puzzle, dayKey, persist: !practice });
   const complete = game.isComplete(session.state);
+  const { lang, t } = useTranslation();
+  const text = localizeGame(game, lang);
 
   return (
     <div className="space-y-6">
@@ -27,19 +30,19 @@ export function GameHost({ edition, dayKey, game, puzzle, practice = false, tool
 
       <header className="text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          {practice ? "Practice" : `Randodle #${String(edition).padStart(3, "0")}`}
+          {practice ? t.game.practice : `Randodle #${String(edition).padStart(3, "0")}`}
         </p>
         <h1 className="mt-2 font-display text-3xl font-extrabold uppercase tracking-tight text-foreground sm:text-4xl">
           <span aria-hidden="true">{game.emoji} </span>
-          {game.name}
+          {text.name}
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">{game.prompt}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{text.prompt}</p>
       </header>
 
       {complete ? (
         <ResultScreen
           edition={edition}
-          game={game}
+          game={text}
           state={session.state}
           score={session.score}
           streak={session.streak.current}

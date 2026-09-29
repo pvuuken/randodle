@@ -1,4 +1,5 @@
 import { useId, useState, type ReactNode } from "react";
+import { useTranslation } from "@/i18n";
 
 interface GuessFormProps {
   label: string;
@@ -20,6 +21,7 @@ export function GuessForm({
   helpText,
   onSubmit,
 }: GuessFormProps) {
+  const { t } = useTranslation();
   const inputId = useId();
   const listId = useId();
   const errorId = useId();
@@ -33,7 +35,7 @@ export function GuessForm({
         event.preventDefault();
         const trimmed = value.trim();
         if (!trimmed) {
-          setError("Enter a guess before submitting.");
+          setError(t.game.emptyGuess);
           return;
         }
         setError(null);
@@ -63,7 +65,7 @@ export function GuessForm({
           disabled={disabled}
           className="min-h-13 rounded-xl bg-accent px-6 text-base font-bold uppercase tracking-wide text-accent-foreground transition-transform hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:opacity-50"
         >
-          Guess
+          {t.game.guess}
         </button>
       </div>
       {suggestions ? (

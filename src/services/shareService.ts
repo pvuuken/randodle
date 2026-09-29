@@ -5,10 +5,14 @@ export interface ShareInput {
   game: GameModule<Puzzle>;
   state: GameState;
   streak: number;
+  /** Localized closing lines; English by default. */
+  labels?: { streak: (n: number) => string; beatMe: string };
 }
 
+const DEFAULT_LABELS = { streak: (n: number) => `🔥 ${n} day streak`, beatMe: "Can you beat me?" };
+
 /** Spoiler-free share text. Works for every registered game. */
-export function buildShareText({ edition, game, state, streak }: ShareInput): string {
+export function buildShareText({ edition, game, state, streak, labels = DEFAULT_LABELS }: ShareInput): string {
   const share = game.getShareResult(state);
   const lines = [
     `🎲 Randodle #${String(edition).padStart(3, "0")}`,
@@ -19,8 +23,8 @@ export function buildShareText({ edition, game, state, streak }: ShareInput): st
     "",
     share.progress,
   ];
-  if (streak > 0) lines.push("", `🔥 ${streak} day streak`);
-  lines.push("", "Can you beat me?");
+  if (streak > 0) lines.push("", labels.streak(streak));
+  lines.push("", labels.beatMe);
   return lines.join("\n");
 }
 
