@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import type { Localized } from "@/i18n";
 
 /** Status of a single play session. */
 export type GameStatus = "playing" | "won" | "lost";
@@ -36,6 +37,8 @@ export interface Clue {
   icon: string;
   label: string;
   value: string;
+  /** Optional translated label/value per language. */
+  translations?: Localized<{ label: string; value: string }>;
 }
 
 export interface ShareResult {
@@ -68,6 +71,8 @@ export interface GameModule<P extends Puzzle = Puzzle> {
   prompt: string;
   /** How-to-play summary. */
   howToPlay: string;
+  /** Translated name/category/prompt/howToPlay; English fields are the fallback. */
+  locales?: Localized<{ name?: string; category?: string; prompt?: string; howToPlay?: string }>;
   maxAttempts: number;
   /** Highest possible score shown on the result screen. Defaults to 100. */
   maxScore?: number;
