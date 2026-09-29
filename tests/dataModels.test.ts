@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { YEAR_EVENTS } from "@/data/yearEvents";
-import { YEAR_PUZZLES } from "@/data/years";
+import { YEAR_PUZZLES, YEAR_RANGE } from "@/data/years";
 import {
   HIGHER_LOWER_DATASETS,
   HIGHER_LOWER_ITEMS,
@@ -11,10 +11,15 @@ import {
 const unique = (xs: string[]) => new Set(xs).size === xs.length;
 
 describe("YearEvent", () => {
+  test("all 200 production events load", () => expect(YEAR_EVENTS.length).toBe(200));
   test("ids are unique", () => expect(unique(YEAR_EVENTS.map((e) => e.id))).toBe(true));
   test("valid years, EN+NL text, category, source", () => {
     for (const e of YEAR_EVENTS) {
       expect(Number.isInteger(e.year)).toBe(true);
+      expect(e.year).toBeGreaterThanOrEqual(YEAR_RANGE.min);
+      expect(e.year).toBeLessThanOrEqual(YEAR_RANGE.max);
+      expect(["easy", "medium", "hard"]).toContain(e.difficulty);
+      expect(e.source.url).toMatch(/^https:\/\//);
       expect(e.event.en.trim().length).toBeGreaterThan(0);
       expect(e.event.nl.trim().length).toBeGreaterThan(0);
       expect(e.category).toBeTruthy();

@@ -28,4 +28,5 @@ export const YEAR_PUZZLES: YearPuzzle[] = YEAR_EVENTS.map((e) => {
   };
 });
 
-export const YEAR_RANGE = { min: 1800, max: 2026 };
+/** No meaningful lower bound: the dataset reaches back to the 15th century. */
+export const YEAR_RANGE = { min: 1, max: 2026 };
