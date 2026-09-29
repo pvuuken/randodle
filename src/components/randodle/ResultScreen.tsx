@@ -53,7 +53,7 @@ export function ResultScreen({
         <div className="rounded-2xl bg-muted px-4 py-4 text-center">
           <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Score</dt>
           <dd className="mt-1 text-3xl font-bold text-accent">{score}</dd>
-          <dd className="text-xs text-muted-foreground">out of 100</dd>
+          <dd className="text-xs text-muted-foreground">out of {game.maxScore ?? 100}</dd>
         </div>
         <div className="rounded-2xl bg-muted px-4 py-4 text-center">
           <dt className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Attempts</dt>
