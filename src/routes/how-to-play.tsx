@@ -8,10 +8,10 @@ export const Route = createFileRoute("/how-to-play")({
       {
         name: "description",
         content:
-          "How Randodle works: one game a day, scoring out of 100, a platform-wide streak and spoiler-free sharing.",
+          "How Randodle works: one game a day, points for every solve, a platform-wide streak and spoiler-free sharing.",
       },
       { property: "og:title", content: "How to play Randodle" },
-      { property: "og:description", content: "One game a day, scored out of 100, with a streak that spans every game." },
+      { property: "og:description", content: "One game a day, with points to earn and a streak that spans every game." },
     ],
   }),
   component: HowToPlay,
