@@ -67,7 +67,7 @@ const correctCount = (state: GameState) => state.attempts.filter((a) => a.tone =
 
 function ItemCard({ item, value, label }: { item: HigherLowerItem; value: string; label: string }) {
   const lang = useLanguage();
-  const emoji = item.metadata?.emoji;
+  const emoji = item.metadata?.["emoji"];
   return (
     <div className="flex-1 rounded-2xl border border-border bg-card px-4 py-5 text-center shadow-card">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
