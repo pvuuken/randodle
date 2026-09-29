@@ -25,7 +25,7 @@ export function posterMaskStyle(mask?: PosterMask): CSSProperties | null {
   };
 }
 
-export function PosterReveal({ src, scale, alt, fallback, mask }: { src: string; scale: number; alt: string; fallback: string; mask?: PosterMask }) {
+export function PosterReveal({ src, scale, alt, fallback, mask }: { src: string; scale: number; alt: string; fallback: string; mask?: PosterMask | undefined }) {
   const maskStyle = posterMaskStyle(mask);
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const failed = failedSrc === src;
