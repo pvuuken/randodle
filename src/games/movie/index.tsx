@@ -12,6 +12,8 @@ import { isAnswerCorrect } from "@/services/answerService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
 import { PosterReveal, revealScale } from "./PosterReveal";
+import { ClueList } from "@/components/game/ClueList";
+import type { GameState } from "@/types/game";
 import { GuessForm } from "@/components/game/GuessForm";
 import { getLanguage, useLanguage } from "@/i18n";
 
@@ -19,7 +21,7 @@ const TEXT = {
   en: {
     label: "Which film is it?",
     placeholder: "Search a title…",
-    help: "Every wrong guess reveals more of the poster.",
+    help: "Every wrong guess reveals more of the poster and a new clue.",
     poster: "Today's movie poster",
     noPoster: "Poster unavailable",
     correct: "Correct — that's today's film.",
@@ -30,7 +32,7 @@ const TEXT = {
   nl: {
     label: "Welke film is het?",
     placeholder: "Zoek een titel…",
-    help: "Elke foute gok toont meer van de affiche.",
+    help: "Elke foute gok toont meer van de affiche en een nieuwe hint.",
     poster: "Filmaffiche van vandaag",
     noPoster: "Affiche niet beschikbaar",
     correct: "Juist — dat is de film van vandaag.",
@@ -39,6 +41,13 @@ const TEXT = {
     wrong: "Net niet. Er wordt meer van de affiche getoond.",
   },
 };
+
+/** Clues shown: 1 at start, +1 per wrong guess (max 5); all 5 once lost. Correct guesses add none. */
+export function visibleClueCount(state: GameState, total = 5): number {
+  if (state.status === "lost") return total;
+  const wrong = state.attempts.filter((a) => a.tone !== "correct").length;
+  return Math.min(wrong + 1, total);
+}
 
 const ID = "movie";
 const MAX_ATTEMPTS = 6;
@@ -49,6 +58,7 @@ function MoviePlay({ puzzle, state, onSubmit }: GamePlayProps<MoviePuzzle>) {
   return (
     <div className="space-y-6">
       <PosterReveal src={puzzle.posterUrl} mask={puzzle.posterMask} scale={revealScale(state)} alt={tx.poster} fallback={tx.noPoster} />
+      <ClueList clues={puzzle.clues} revealed={visibleClueCount(state, puzzle.clues.length)} />
       <AttemptCounter state={state} />
       <GuessForm
         label={tx.label}

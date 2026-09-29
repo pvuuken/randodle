@@ -1,4 +1,5 @@
-import type { Puzzle } from "@/types/game";
+import type { Clue, Puzzle } from "@/types/game";
+import { MOVIE_CLUES } from "@/data/movieClues";
 import { MOVIE_LIST, moviePosterUrl, type Movie } from "@/data/movieList";
 
 /** A Movie Game puzzle: one real film from MOVIE_LIST, guessed from its poster. */
@@ -10,6 +11,23 @@ export interface MoviePuzzle extends Puzzle {
   title: Movie["title"];
   posterUrl: string;
   posterMask?: Movie["posterMask"];
+  /** 5 clues, hardest first; text per language lives in movieClues.ts. */
+  clues: Clue[];
+}
+
+const LEVELS = {
+  en: ["Very hard", "Hard", "Medium", "Easy", "Very easy"],
+  nl: ["Zeer moeilijk", "Moeilijk", "Gemiddeld", "Makkelijk", "Zeer makkelijk"],
+};
+
+function buildClues(id: string): Clue[] {
+  const c = MOVIE_CLUES[id];
+  return c.en.map((value, i) => ({
+    icon: "🔍",
+    label: LEVELS.en[i],
+    value,
+    translations: { nl: { label: LEVELS.nl[i], value: c.nl[i] } },
+  }));
 }
 
 export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
@@ -18,6 +36,7 @@ export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
   aliases: m.title.nl !== m.title.en ? [m.title.nl] : [],
   title: m.title,
   posterUrl: moviePosterUrl(m),
+  clues: buildClues(m.id),
   ...(m.posterMask ? { posterMask: m.posterMask } : {}),
 }));
 
