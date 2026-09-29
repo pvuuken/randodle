@@ -21,5 +21,8 @@ export function getGame(id: string): RegisteredGame | undefined {
 }
 
 export function listGames(): RegisteredGame[] {
-  return GAME_ROTATION.map((id) => GAME_REGISTRY[id]);
+  return GAME_ROTATION.flatMap((id) => {
+    const game = GAME_REGISTRY[id];
+    return game ? [game] : [];
+  });
 }

@@ -15,11 +15,14 @@ export function dayIndex(date: Date = new Date()): number {
   return Math.round((today.getTime() - start.getTime()) / 86_400_000);
 }
 
+function parseDayKey(key: string): Date {
+  const [y = 1970, m = 1, d = 1] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function daysBetween(aKey: string, bKey: string): number {
-  const [ay, am, ad] = aKey.split("-").map(Number);
-  const [by, bm, bd] = bKey.split("-").map(Number);
-  const a = new Date(ay, am - 1, ad).getTime();
-  const b = new Date(by, bm - 1, bd).getTime();
+  const a = parseDayKey(aKey).getTime();
+  const b = parseDayKey(bKey).getTime();
   return Math.round((b - a) / 86_400_000);
 }
 
