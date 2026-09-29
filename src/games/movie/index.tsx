@@ -11,7 +11,7 @@ import { standardScore } from "@/services/scoreService";
 import { isAnswerCorrect } from "@/services/answerService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
-import { ClueList } from "@/components/game/ClueList";
+import { PosterReveal, revealScale } from "./PosterReveal";
 import { GuessForm } from "@/components/game/GuessForm";
 import { getLanguage, useLanguage } from "@/i18n";
 
@@ -19,20 +19,24 @@ const TEXT = {
   en: {
     label: "Which film is it?",
     placeholder: "Search a title…",
-    help: "Every wrong guess unlocks one more clue.",
+    help: "Every wrong guess reveals more of the poster.",
+    poster: "Today's movie poster",
+    noPoster: "Poster unavailable",
     correct: "Correct — that's today's film.",
     lost: (a: string) => `Out of guesses — it was ${a}.`,
-    close: "Close — you've got part of the title. New clue unlocked.",
-    wrong: "Not quite. A new clue is unlocked.",
+    close: "Close — you've got part of the title. More of the poster is revealed.",
+    wrong: "Not quite. More of the poster is revealed.",
   },
   nl: {
     label: "Welke film is het?",
     placeholder: "Zoek een titel…",
-    help: "Elke foute gok geeft je een extra hint.",
+    help: "Elke foute gok toont meer van de affiche.",
+    poster: "Filmaffiche van vandaag",
+    noPoster: "Affiche niet beschikbaar",
     correct: "Juist — dat is de film van vandaag.",
     lost: (a: string) => `Geen pogingen meer — het was ${a}.`,
-    close: "Bijna — je hebt een deel van de titel. Nieuwe hint vrijgespeeld.",
-    wrong: "Net niet. Er is een nieuwe hint vrijgespeeld.",
+    close: "Bijna — je hebt een deel van de titel. Er wordt meer van de affiche getoond.",
+    wrong: "Net niet. Er wordt meer van de affiche getoond.",
   },
 };
 
@@ -44,7 +48,7 @@ function MoviePlay({ puzzle, state, onSubmit }: GamePlayProps<MoviePuzzle>) {
   const tx = TEXT[useLanguage()];
   return (
     <div className="space-y-6">
-      <ClueList clues={puzzle.clues} revealed={state.attempts.length + 1} />
+      <PosterReveal src={puzzle.posterUrl} scale={revealScale(state)} alt={tx.poster} fallback={tx.noPoster} />
       <AttemptCounter state={state} />
       <GuessForm
         label={tx.label}
@@ -64,13 +68,13 @@ export const movieGame: GameModule<MoviePuzzle> = {
   name: "Guess the Movie",
   category: "Film",
   emoji: "🎬",
-  prompt: "Can you identify today's movie from a single quote?",
-  howToPlay: "You start with one quote. Each wrong guess reveals another clue — six attempts in total.",
+  prompt: "Can you identify today's movie from a zoomed-in poster?",
+  howToPlay: "The poster starts zoomed in. Each wrong guess zooms out — six attempts in total.",
   locales: {
     nl: {
       name: "Raad de film",
-      prompt: "Herken jij de film van vandaag aan één enkel citaat?",
-      howToPlay: "Je begint met één citaat. Elke foute gok onthult een extra hint — zes pogingen in totaal.",
+      prompt: "Herken jij de film van vandaag aan een ingezoomde affiche?",
+      howToPlay: "De affiche start ingezoomd. Elke foute gok zoomt verder uit — zes pogingen in totaal.",
     },
   },
   maxAttempts: MAX_ATTEMPTS,
@@ -102,14 +106,14 @@ export const movieGame: GameModule<MoviePuzzle> = {
       state: next,
       message:
         next.status === "lost"
-          ? tx.lost(puzzle.answer)
+          ? tx.lost(puzzle.title[getLanguage()])
           : sharesWord
             ? tx.close
             : tx.wrong,
     };
   },
 
-  getLossAnswer: (puzzle) => puzzle.answer,
+  getLossAnswer: (puzzle) => puzzle.title[getLanguage()],
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,
