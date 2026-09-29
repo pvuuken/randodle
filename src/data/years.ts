@@ -1,6 +1,8 @@
 import type { Puzzle } from "@/types/game";
 import type { Localized } from "@/i18n";
+import { YEAR_EVENTS } from "@/data/yearEvents";
 
+/** Puzzle view of a YearEvent, in the shape the Year game already reads. */
 export interface YearPuzzle extends Puzzle {
   event: string;
   answer: number;
@@ -9,17 +11,21 @@ export interface YearPuzzle extends Puzzle {
   translations?: Localized<{ event: string; hint?: string }>;
 }
 
-export const YEAR_PUZZLES: YearPuzzle[] = [
-  { id: "year-001", event: "The first iPhone was released.", answer: 2007, hint: "Somewhere in the 2000s.", translations: { nl: { event: "De eerste iPhone kwam op de markt.", hint: "Ergens in de jaren 2000." } } },
-  { id: "year-002", event: "The Berlin Wall came down.", answer: 1989, hint: "Late 20th century.", translations: { nl: { event: "De Berlijnse Muur viel.", hint: "Eind 20e eeuw." } } },
-  { id: "year-003", event: "The World Wide Web was made public.", answer: 1991, translations: { nl: { event: "Het World Wide Web werd openbaar." } } },
-  { id: "year-004", event: "Humans first walked on the Moon.", answer: 1969, translations: { nl: { event: "De eerste mensen liepen op de maan." } } },
-  { id: "year-005", event: "The euro entered circulation as notes and coins.", answer: 2002, translations: { nl: { event: "De euro werd ingevoerd als biljetten en munten." } } },
-  { id: "year-006", event: "The Titanic sank on its maiden voyage.", answer: 1912, translations: { nl: { event: "De Titanic zonk tijdens haar eerste reis." } } },
-  { id: "year-007", event: "The first modern Olympic Games were held in Athens.", answer: 1896, translations: { nl: { event: "De eerste moderne Olympische Spelen werden in Athene gehouden." } } },
-  { id: "year-008", event: "The Chernobyl disaster occurred.", answer: 1986, translations: { nl: { event: "De kernramp van Tsjernobyl vond plaats." } } },
-  { id: "year-009", event: "Nelson Mandela was released from prison.", answer: 1990, translations: { nl: { event: "Nelson Mandela werd vrijgelaten uit de gevangenis." } } },
-  { id: "year-010", event: "The Hubble Space Telescope was launched.", answer: 1990, translations: { nl: { event: "De Hubble-ruimtetelescoop werd gelanceerd." } } },
-];
+/** Puzzle-only hints (not part of the event data). */
+const HINTS: Record<string, { en: string; nl: string }> = {
+  "year-001": { en: "Somewhere in the 2000s.", nl: "Ergens in de jaren 2000." },
+  "year-002": { en: "Late 20th century.", nl: "Eind 20e eeuw." },
+};
+
+export const YEAR_PUZZLES: YearPuzzle[] = YEAR_EVENTS.map((e) => {
+  const hint = HINTS[e.id];
+  return {
+    id: e.id,
+    event: e.event.en,
+    answer: e.year,
+    ...(hint ? { hint: hint.en } : {}),
+    translations: { nl: { event: e.event.nl, ...(hint ? { hint: hint.nl } : {}) } },
+  };
+});
 
 export const YEAR_RANGE = { min: 1800, max: 2026 };
