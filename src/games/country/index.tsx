@@ -85,6 +85,7 @@ export const countryGame: GameModule<CountryPuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

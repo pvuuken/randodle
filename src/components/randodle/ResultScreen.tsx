@@ -14,6 +14,8 @@ interface ResultScreenProps {
   /** Shown in test mode instead of the daily framing. */
   practice?: boolean;
   onPlayAgain?: () => void;
+  /** Revealed only after a definitive loss. */
+  correctAnswer?: string;
 }
 
 export function ResultScreen({
@@ -24,6 +26,7 @@ export function ResultScreen({
   streak,
   practice = false,
   onPlayAgain,
+  correctAnswer,
 }: ResultScreenProps) {
   const [status, setStatus] = useState("");
   const text = buildShareText({ edition, game, state, streak });
@@ -48,6 +51,14 @@ export function ResultScreen({
         <span aria-hidden="true">{game.emoji} </span>
         {game.name}
       </p>
+      {!won && correctAnswer ? (
+        <div className="mt-4 rounded-2xl border border-border bg-muted px-4 py-3 text-center">
+          <p className="text-sm font-bold uppercase tracking-[0.12em] text-foreground">Game over!</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            The correct answer was: <span className="font-bold text-foreground">{correctAnswer}</span>
+          </p>
+        </div>
+      ) : null}
 
       <dl className="mt-6 grid grid-cols-2 gap-3">
         <div className="rounded-2xl bg-muted px-4 py-4 text-center">

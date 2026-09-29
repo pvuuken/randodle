@@ -79,6 +79,7 @@ export const movieGame: GameModule<MoviePuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

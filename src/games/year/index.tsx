@@ -62,9 +62,13 @@ export const yearGame: GameModule<YearPuzzle> = {
   initialize: (puzzle) => createState(ID, puzzle.id, MAX_ATTEMPTS),
 
   submitAnswer(state, puzzle, answer) {
-    const guess = Number.parseInt(answer.replace(/[^0-9-]/g, ""), 10);
-    if (Number.isNaN(guess)) {
+    const trimmed = answer.trim();
+    if (!/^\d{1,4}$/.test(trimmed)) {
       return { state, message: "Enter a year as a number, for example 1994." };
+    }
+    const guess = Number.parseInt(trimmed, 10);
+    if (guess < YEAR_RANGE.min || guess > YEAR_RANGE.max) {
+      return { state, message: `Enter a year between ${YEAR_RANGE.min} and ${YEAR_RANGE.max}.` };
     }
     if (guess === puzzle.answer) {
       return {
@@ -88,6 +92,7 @@ export const yearGame: GameModule<YearPuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => String(puzzle.answer),
   isComplete,
   calculateScore: yearScore,
   getShareResult: standardShare,
