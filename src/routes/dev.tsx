@@ -115,6 +115,11 @@ function DevPage() {
         <p role="status" aria-live="polite" className="min-h-5 text-sm text-muted-foreground">
           {notice}
         </p>
+        {game.getAnswerKey ? (
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">Answer key:</span> {game.getAnswerKey(puzzle)}
+          </p>
+        ) : null}
       </section>
 
       <section className="surface-card mt-6 p-5">
