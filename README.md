@@ -22,3 +22,8 @@ cd <repository-name>
 npm i
 npm run dev 
 ```
+
+## TMDB attribution
+
+Movie metadata and poster references in `src/data/movieList.ts` come from [The Movie Database (TMDB)](https://www.themoviedb.org/).
+This product uses the TMDB API but is not endorsed or certified by TMDB. No commercial licence is claimed; check TMDB's terms before any commercial use.
