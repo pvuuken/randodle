@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FLAG_COUNTRIES, FLAG_PUZZLES, type FlagCountry, type FlagPuzzle } from "@/data/flags";
-import { createState, isComplete, normalise, puzzleForDay } from "@/engine/gameEngine";
+import { createState, isComplete, puzzleForDay } from "@/engine/gameEngine";
+import { isAnswerCorrect } from "@/services/answerService";
 import type { Attempt, GameModule, GamePlayProps, GameState } from "@/types/game";
 import { GuessForm } from "@/components/game/GuessForm";
 import { COUNTRY_NAMES_NL } from "@/data/countries";
@@ -56,12 +57,8 @@ const countryByCode = (code: string | undefined): FlagCountry =>
   (FLAG_COUNTRIES.find((x) => x.code === code) ?? FLAG_COUNTRIES[0]) as FlagCountry;
 
 function matchCountry(input: string): FlagCountry | undefined {
-  const n = normalise(input);
-  return FLAG_COUNTRIES.find(
-    (x) =>
-      normalise(x.name) === n ||
-      normalise(COUNTRY_NAMES_NL[x.name] ?? "") === n ||
-      x.aliases?.some((a) => normalise(a) === n),
+  return FLAG_COUNTRIES.find((x) =>
+    isAnswerCorrect(input, x.name, [COUNTRY_NAMES_NL[x.name] ?? "", ...(x.aliases ?? [])]),
   );
 }
 

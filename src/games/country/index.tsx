@@ -8,6 +8,7 @@ import {
   standardShare,
 } from "@/engine/gameEngine";
 import { standardScore } from "@/services/scoreService";
+import { isAnswerCorrect } from "@/services/answerService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
 import { ClueList } from "@/components/game/ClueList";
@@ -97,8 +98,7 @@ export const countryGame: GameModule<CountryPuzzle> = {
     const tx = TEXT[lang];
     const english = toEnglish(normalise(answer));
     const guess = normalise(english ?? answer);
-    const accepted = [puzzle.answer, ...(puzzle.aliases ?? [])].map(normalise);
-    if (accepted.includes(guess)) {
+    if (isAnswerCorrect(english ?? answer, puzzle.answer, puzzle.aliases)) {
       return {
         state: pushAttempt(state, { value: answer, tone: "correct", feedback: "Correct" }),
         message: tx.correct,

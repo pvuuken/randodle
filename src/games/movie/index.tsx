@@ -8,6 +8,7 @@ import {
   standardShare,
 } from "@/engine/gameEngine";
 import { standardScore } from "@/services/scoreService";
+import { isAnswerCorrect } from "@/services/answerService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
 import { ClueList } from "@/components/game/ClueList";
@@ -82,9 +83,7 @@ export const movieGame: GameModule<MoviePuzzle> = {
 
   submitAnswer(state, puzzle, answer) {
     const tx = TEXT[getLanguage()];
-    const guess = normalise(answer);
-    const target = normalise(puzzle.answer);
-    if (guess === target) {
+    if (isAnswerCorrect(answer, puzzle.answer, puzzle.aliases)) {
       return {
         state: pushAttempt(state, { value: answer, tone: "correct", feedback: "Correct" }),
         message: tx.correct,

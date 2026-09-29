@@ -3,6 +3,8 @@ import type { Clue, Puzzle } from "@/types/game";
 export interface MoviePuzzle extends Puzzle {
   /** The title to guess. Demo/placeholder catalogue for v0.1. */
   answer: string;
+  /** Optional accepted alternatives, e.g. without a leading "The". */
+  aliases?: string[];
   clues: Clue[];
 }
 
@@ -29,6 +31,7 @@ export const MOVIE_PUZZLES: MoviePuzzle[] = [
   {
     id: "movie-001",
     answer: "The Paper Astronaut",
+    aliases: ["Paper Astronaut"],
     clues: [
       { icon: "💬", label: "Quote", value: "\"We built a rocket out of homework.\"", translations: { nl: { label: "Citaat", value: "\"We bouwden een raket van ons huiswerk.\"" } } },
       { icon: "📅", label: "Release year", value: "2019", translations: { nl: { label: "Jaar van uitgave", value: "2019" } } },
