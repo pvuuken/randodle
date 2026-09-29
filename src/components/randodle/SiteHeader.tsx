@@ -24,6 +24,13 @@ export function SiteHeader() {
             Today
           </Link>
           <Link
+            to="/stats"
+            className="rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            activeProps={{ className: "text-accent" }}
+          >
+            Stats
+          </Link>
+          <Link
             to="/how-to-play"
             className="rounded-lg px-3 py-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             activeProps={{ className: "text-accent" }}
