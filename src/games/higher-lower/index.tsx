@@ -7,6 +7,38 @@ import {
 } from "@/data/higherLower";
 import { createState, isComplete, puzzleForDay } from "@/engine/gameEngine";
 import type { Attempt, GameModule, GamePlayProps, GameState } from "@/types/game";
+import { getLanguage, useLanguage } from "@/i18n";
+
+const TEXT = {
+  en: {
+    round: "Round",
+    score: "Score",
+    categories: {} as Record<string, string>,
+    known: "Known",
+    guess: "Higher or lower?",
+    correct: "✅ Correct! +100",
+    wrong: "❌ Wrong. +0",
+    next: "Next round",
+    higher: "▲ Higher",
+    lower: "▼ Lower",
+    choose: "Choose Higher or Lower.",
+    verdict: (ok: boolean) => (ok ? "correct" : "wrong"),
+  },
+  nl: {
+    round: "Ronde",
+    score: "Score",
+    categories: { Population: "Inwoners" } as Record<string, string>,
+    known: "Bekend",
+    guess: "Hoger of lager?",
+    correct: "✅ Juist! +100",
+    wrong: "❌ Fout. +0",
+    next: "Volgende ronde",
+    higher: "▲ Hoger",
+    lower: "▼ Lager",
+    choose: "Kies Hoger of Lager.",
+    verdict: (ok: boolean) => (ok ? "juist" : "fout"),
+  },
+};
 
 const ID = "higher-lower";
 const ROUNDS = 5;
@@ -39,6 +71,7 @@ function ItemCard({ item, value, label }: { item: HigherLowerItem; value: string
 function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerPuzzle>) {
   // Round just answered, kept on screen until the player moves on.
   const [revealed, setRevealed] = useState<number | null>(null);
+  const tx = TEXT[useLanguage()];
   const answered = state.attempts.length;
   useEffect(() => setRevealed(null), [puzzle.id]);
 
@@ -58,16 +91,17 @@ function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerP
   return (
     <div className="space-y-6">
       <p className="text-center text-sm font-semibold text-muted-foreground">
-        Round <span className="text-foreground">{showing + 1}</span> / {ROUNDS} · {puzzle.category} · Score{" "}
+        {tx.round} <span className="text-foreground">{showing + 1}</span> / {ROUNDS} ·{" "}
+        {tx.categories[puzzle.category] ?? puzzle.category} · {tx.score}{" "}
         <span className="text-foreground">{correctCount(state) * POINTS_PER_ROUND}</span>
       </p>
 
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-        <ItemCard item={reference} label="Known" value={formatPopulation(reference.population)} />
+        <ItemCard item={reference} label={tx.known} value={formatPopulation(reference.population)} />
         <p className="text-center font-display text-lg font-extrabold text-muted-foreground">VS</p>
         <ItemCard
           item={challenger}
-          label="Higher or lower?"
+          label={tx.guess}
           value={result ? formatPopulation(challenger.population) : "???"}
         />
       </div>
@@ -75,23 +109,23 @@ function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerP
       {result ? (
         <div className="space-y-4 text-center">
           <p role="status" className="text-lg font-bold text-foreground">
-            {result.tone === "correct" ? "✅ Correct! +100" : "❌ Wrong. +0"}
+            {result.tone === "correct" ? tx.correct : tx.wrong}
           </p>
           <button
             type="button"
             onClick={() => setRevealed(null)}
             className={`${big} w-full bg-accent text-accent-foreground shadow-glow hover:brightness-110`}
           >
-            Next round
+            {tx.next}
           </button>
         </div>
       ) : (
         <div className="flex gap-3">
           <button type="button" onClick={() => choose("higher")} className={`${big} bg-accent text-accent-foreground hover:brightness-110`}>
-            ▲ Higher
+            {tx.higher}
           </button>
           <button type="button" onClick={() => choose("lower")} className={`${big} border border-border bg-muted text-foreground hover:bg-card`}>
-            ▼ Lower
+            {tx.lower}
           </button>
         </div>
       )}
@@ -107,6 +141,15 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
   prompt: "Five rounds. Is the next one higher or lower?",
   howToPlay:
     "You see a country's population and a second country with its value hidden. Guess whether it's higher or lower. The revealed country becomes the next reference. 5 rounds, 100 points per correct answer.",
+  locales: {
+    nl: {
+      name: "Hoger of lager",
+      category: "Vergelijking",
+      prompt: "Vijf rondes. Is de volgende hoger of lager?",
+      howToPlay:
+        "Je ziet het inwonertal van een land en een tweede land waarvan de waarde verborgen is. Raad of die hoger of lager is. Het onthulde land wordt de nieuwe referentie. 5 rondes, 100 punten per juist antwoord.",
+    },
+  },
   maxAttempts: ROUNDS,
   maxScore: ROUNDS * POINTS_PER_ROUND,
 
@@ -117,9 +160,10 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
   initialize: (puzzle) => createState(ID, puzzle.id, ROUNDS),
 
   submitAnswer(state, puzzle, answer) {
+    const tx = TEXT[getLanguage()];
     const choice = answer.toLowerCase();
     if (choice !== "higher" && choice !== "lower") {
-      return { state, message: "Choose Higher or Lower." };
+      return { state, message: tx.choose };
     }
     const round = state.attempts.length;
     const reference = itemById(puzzle.chain[round]);
@@ -139,7 +183,7 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
     };
     return {
       state: next,
-      message: `${challenger.name}: ${formatPopulation(challenger.population)} — ${correct ? "correct" : "wrong"}.`,
+      message: `${challenger.name}: ${formatPopulation(challenger.population)} — ${tx.verdict(correct)}.`,
     };
   },
 
