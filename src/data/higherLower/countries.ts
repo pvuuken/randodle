@@ -10,10 +10,30 @@ import type { DataSource, HigherLowerItem } from "./types";
  * the CIA World Factbook (population estimate 2024, total area 0.44 km²).
  */
 export const WORLD_BANK_SOURCE: DataSource = {
-  name: "World Bank, World Development Indicators (SP.POP.TOTL, AG.SRF.TOTL.K2)",
-  url: "https://data.worldbank.org/indicator/SP.POP.TOTL",
+  name: "World Bank, World Development Indicators",
+  url: "https://databank.worldbank.org/source/world-development-indicators",
   referenceDate: "2023",
 };
+
+/** Exact per-metric provenance (DataSource holds one URL, so metric detail lives in metadata). */
+const METRIC_SOURCES = {
+  WB: {
+    populationSource: "World Bank WDI SP.POP.TOTL (Population, total), 2023",
+    populationSourceUrl: "https://data.worldbank.org/indicator/SP.POP.TOTL",
+    populationYear: 2023,
+    areaSource: "World Bank WDI AG.SRF.TOTL.K2 (Surface area, sq. km, incl. inland water), 2023",
+    areaSourceUrl: "https://data.worldbank.org/indicator/AG.SRF.TOTL.K2",
+    areaYear: 2023,
+  },
+  VA: {
+    populationSource: "CIA World Factbook, Holy See — population estimate 2024",
+    populationSourceUrl: "https://www.cia.gov/the-world-factbook/countries/holy-see-vatican-city/",
+    populationYear: 2024,
+    areaSource: "CIA World Factbook, Holy See — total area 0.44 km² (no inland water)",
+    areaSourceUrl: "https://www.cia.gov/the-world-factbook/countries/holy-see-vatican-city/",
+    areaYear: 2024,
+  },
+} as const;
 
 export const VATICAN_SOURCE: DataSource = {
   name: "CIA World Factbook — Holy See (Vatican City)",
@@ -35,7 +55,7 @@ const item = (
   metrics: { population, area },
   source,
   image: { url: `/flags/${id.toLowerCase()}.svg` },
-  metadata: { populationYear: source === WORLD_BANK_SOURCE ? 2023 : 2024, areaDefinition: "total" },
+  metadata: { ...(source === WORLD_BANK_SOURCE ? METRIC_SOURCES.WB : METRIC_SOURCES.VA), areaDefinition: "total", areaUnit: "km²" },
 });
 
 export const HIGHER_LOWER_COUNTRIES: HigherLowerItem[] = [
@@ -64,7 +84,7 @@ export const HIGHER_LOWER_COUNTRIES: HigherLowerItem[] = [
   item("BW", "Botswana", "Botswana", 2480244, 581730),
   item("BR", "Brazil", "Brazilië", 211140729, 8510420),
   item("BN", "Brunei", "Brunei", 458949, 5770),
-  item("BG", "Bulgaria", "Bulgarije", 6446596, 110996.76),
+  item("BG", "Bulgaria", "Bulgarije", 6446596, 110996.758),
   item("BF", "Burkina Faso", "Burkina Faso", 23025776, 274200),
   item("BI", "Burundi", "Burundi", 13689450, 27830),
   item("CV", "Cape Verde", "Kaapverdië", 522331, 4030),
@@ -211,7 +231,7 @@ export const HIGHER_LOWER_COUNTRIES: HigherLowerItem[] = [
   item("SY", "Syria", "Syrië", 23594623, 185180),
   item("TJ", "Tajikistan", "Tadzjikistan", 10389799, 141379),
   item("TZ", "Tanzania", "Tanzania", 66617606, 947300),
-  item("TH", "Thailand", "Thailand", 71702435, 513115.02),
+  item("TH", "Thailand", "Thailand", 71702435, 513115.021),
   item("TL", "Timor-Leste", "Oost-Timor", 1384286, 14870),
   item("TG", "Togo", "Togo", 8223850, 56790),
   item("TO", "Tonga", "Tonga", 104597, 750),
