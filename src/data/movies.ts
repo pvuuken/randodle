@@ -21,12 +21,12 @@ const LEVELS = {
 };
 
 function buildClues(id: string): Clue[] {
-  const c = MOVIE_CLUES[id];
+  const c = MOVIE_CLUES[id] ?? { en: [], nl: [] };
   return c.en.map((value, i) => ({
     icon: "🔍",
-    label: LEVELS.en[i],
+    label: LEVELS.en[i] ?? "",
     value,
-    translations: { nl: { label: LEVELS.nl[i], value: c.nl[i] } },
+    translations: { nl: { label: LEVELS.nl[i] ?? "", value: c.nl[i] ?? value } },
   }));
 }
 
