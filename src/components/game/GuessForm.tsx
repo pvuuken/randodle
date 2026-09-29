@@ -5,7 +5,7 @@ interface GuessFormProps {
   label: string;
   placeholder: string;
   /** Optional autocomplete suggestions. */
-  suggestions?: string[];
+  suggestions?: (string | { value: string; label?: string })[];
   inputMode?: "text" | "numeric";
   disabled?: boolean;
   helpText?: ReactNode;
@@ -70,9 +70,10 @@ export function GuessForm({
       </div>
       {suggestions ? (
         <datalist id={listId}>
-          {suggestions.map((s) => (
-            <option key={s} value={s} />
-          ))}
+          {suggestions.map((s) => {
+            const o = typeof s === "string" ? { value: s } : s;
+            return <option key={o.value} value={o.value} label={o.label} />;
+          })}
         </datalist>
       ) : null}
       {helpText ? <p className="text-xs text-muted-foreground">{helpText}</p> : null}

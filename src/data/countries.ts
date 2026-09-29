@@ -1,93 +1,15 @@
 import type { Clue, Puzzle } from "@/types/game";
 
 export interface CountryPuzzle extends Puzzle {
-  answer: string;
-  /** Accepted alternative spellings, lowercase. */
-  aliases?: string[];
+  /** ISO alpha-2 code into the shared country dataset (countryList.ts). */
+  countryCode: string;
   clues: Clue[];
 }
-
-export const COUNTRY_NAMES: string[] = [
-  "Argentina",
-  "Australia",
-  "Austria",
-  "Brazil",
-  "Canada",
-  "Chile",
-  "Egypt",
-  "France",
-  "Germany",
-  "Iceland",
-  "India",
-  "Ireland",
-  "Italy",
-  "Japan",
-  "Kenya",
-  "Mexico",
-  "Morocco",
-  "Nepal",
-  "Netherlands",
-  "New Zealand",
-  "Norway",
-  "Peru",
-  "Poland",
-  "Portugal",
-  "South Korea",
-  "Spain",
-  "Sweden",
-  "Switzerland",
-  "Thailand",
-  "Vietnam",
-];
-
-/** Dutch country names, keyed by the English name used in game data. */
-export const COUNTRY_NAMES_NL: Record<string, string> = {
-  "Argentina": "Argentinië",
-  "Austria": "Oostenrijk",
-  "Australia": "Australië",
-  "Belgium": "België",
-  "Brazil": "Brazilië",
-  "Canada": "Canada",
-  "Switzerland": "Zwitserland",
-  "China": "China",
-  "Germany": "Duitsland",
-  "Denmark": "Denemarken",
-  "Egypt": "Egypte",
-  "Spain": "Spanje",
-  "Finland": "Finland",
-  "France": "Frankrijk",
-  "United Kingdom": "Verenigd Koninkrijk",
-  "Greece": "Griekenland",
-  "Ireland": "Ierland",
-  "India": "India",
-  "Italy": "Italië",
-  "Japan": "Japan",
-  "South Korea": "Zuid-Korea",
-  "Mexico": "Mexico",
-  "Nigeria": "Nigeria",
-  "Netherlands": "Nederland",
-  "Norway": "Noorwegen",
-  "Poland": "Polen",
-  "Portugal": "Portugal",
-  "Sweden": "Zweden",
-  "Turkey": "Turkije",
-  "United States": "Verenigde Staten",
-  "South Africa": "Zuid-Afrika",
-  "Chile": "Chili",
-  "Iceland": "IJsland",
-  "Kenya": "Kenia",
-  "Morocco": "Marokko",
-  "Nepal": "Nepal",
-  "New Zealand": "Nieuw-Zeeland",
-  "Peru": "Peru",
-  "Thailand": "Thailand",
-  "Vietnam": "Vietnam",
-};
 
 export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   {
     id: "country-001",
-    answer: "Portugal",
+    countryCode: "PT",
     clues: [
       { icon: "🌍", label: "Continent", value: "Europe", translations: { nl: { label: "Continent", value: "Europa" } } },
       { icon: "🌊", label: "Geography", value: "Atlantic coastline along its entire west", translations: { nl: { label: "Ligging", value: "Atlantische kust langs de hele westkant" } } },
@@ -98,7 +20,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-002",
-    answer: "Iceland",
+    countryCode: "IS",
     clues: [
       { icon: "🌍", label: "Continent", value: "Europe", translations: { nl: { label: "Continent", value: "Europa" } } },
       { icon: "🌋", label: "Geography", value: "Volcanic island near the Arctic Circle", translations: { nl: { label: "Ligging", value: "Vulkanisch eiland bij de poolcirkel" } } },
@@ -109,7 +31,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-003",
-    answer: "Nepal",
+    countryCode: "NP",
     clues: [
       { icon: "🌍", label: "Continent", value: "Asia", translations: { nl: { label: "Continent", value: "Azië" } } },
       { icon: "🏔️", label: "Geography", value: "Landlocked, home to the highest peak on Earth", translations: { nl: { label: "Ligging", value: "Geen kust, met de hoogste berg ter wereld" } } },
@@ -120,7 +42,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-004",
-    answer: "Peru",
+    countryCode: "PE",
     clues: [
       { icon: "🌍", label: "Continent", value: "South America", translations: { nl: { label: "Continent", value: "Zuid-Amerika" } } },
       { icon: "🏞️", label: "Geography", value: "Andes, Amazon and Pacific coast in one country", translations: { nl: { label: "Ligging", value: "Andes, Amazone en Stille Oceaan in één land" } } },
@@ -131,7 +53,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-005",
-    answer: "Vietnam",
+    countryCode: "VN",
     clues: [
       { icon: "🌍", label: "Continent", value: "Asia", translations: { nl: { label: "Continent", value: "Azië" } } },
       { icon: "🌊", label: "Geography", value: "Long S-shaped coastline on the South China Sea", translations: { nl: { label: "Ligging", value: "Lange S-vormige kust aan de Zuid-Chinese Zee" } } },
@@ -142,7 +64,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-006",
-    answer: "Morocco",
+    countryCode: "MA",
     clues: [
       { icon: "🌍", label: "Continent", value: "Africa", translations: { nl: { label: "Continent", value: "Afrika" } } },
       { icon: "🏜️", label: "Geography", value: "Atlas mountains, desert and two coastlines", translations: { nl: { label: "Ligging", value: "Atlasgebergte, woestijn en twee kusten" } } },
@@ -153,8 +75,7 @@ export const COUNTRY_PUZZLES: CountryPuzzle[] = [
   },
   {
     id: "country-007",
-    answer: "New Zealand",
-    aliases: ["nz"],
+    countryCode: "NZ",
     clues: [
       { icon: "🌍", label: "Continent", value: "Oceania", translations: { nl: { label: "Continent", value: "Oceanië" } } },
       { icon: "🏝️", label: "Geography", value: "Two main islands, no land borders", translations: { nl: { label: "Ligging", value: "Twee hoofdeilanden, geen landgrenzen" } } },

@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { FLAG_COUNTRIES, FLAG_PUZZLES, type FlagCountry, type FlagPuzzle } from "@/data/flags";
+import { FLAG_PUZZLES, type FlagPuzzle } from "@/data/flags";
 import { createState, isComplete, puzzleForDay } from "@/engine/gameEngine";
-import { isAnswerCorrect } from "@/services/answerService";
+import { countryByCode as lookup, countrySuggestions, localizeCountry, resolveCountry, type Country } from "@/services/countryService";
 import type { Attempt, GameModule, GamePlayProps, GameState } from "@/types/game";
 import { GuessForm } from "@/components/game/GuessForm";
-import { COUNTRY_NAMES_NL } from "@/data/countries";
 import { getLanguage, useLanguage, type Language } from "@/i18n";
 
 const TEXT = {
@@ -44,7 +43,8 @@ const TEXT = {
   },
 };
 
-const displayName = (name: string, lang: Language) => (lang === "nl" ? (COUNTRY_NAMES_NL[name] ?? name) : name);
+/** Attempts store the English name (unchanged format); display localizes it. */
+const displayName = (name: string, lang: Language) => localizeCountry(name, lang);
 
 const ID = "flag";
 const ROUNDS = 5;
@@ -53,14 +53,9 @@ const POINTS = [100, 75, 50];
 /** Flags guessed needed for the day to count as a win for the streak. */
 const WIN_THRESHOLD = 3;
 
-const countryByCode = (code: string | undefined): FlagCountry =>
-  (FLAG_COUNTRIES.find((x) => x.code === code) ?? FLAG_COUNTRIES[0]) as FlagCountry;
+const countryByCode = (code: string | undefined): Country => (lookup(code) ?? lookup("BE")) as Country;
 
-function matchCountry(input: string): FlagCountry | undefined {
-  return FLAG_COUNTRIES.find((x) =>
-    isAnswerCorrect(input, x.name, [COUNTRY_NAMES_NL[x.name] ?? "", ...(x.aliases ?? [])]),
-  );
-}
+const matchCountry = resolveCountry;
 
 interface Round {
   guesses: Attempt[];
@@ -129,7 +124,7 @@ function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
       {shown ? (
         <div className="space-y-4 text-center">
           <p role="status" className="text-lg font-bold text-foreground">
-            {shown.solved ? tx.correct(shown.points) : tx.out(displayName(country.name, lang))}
+            {shown.solved ? tx.correct(shown.points) : tx.out(displayName(country.name.en, lang))}
           </p>
           <button
             type="button"
@@ -149,7 +144,7 @@ function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
             key={`${index}-${wrong}`}
             label={tx.label}
             placeholder={tx.placeholder}
-            suggestions={FLAG_COUNTRIES.map((x) => displayName(x.name, lang))}
+            suggestions={countrySuggestions(lang)}
             onSubmit={submit}
           />
           {round && round.guesses.length > 0 ? (
@@ -186,7 +181,7 @@ export const flagGame: GameModule<FlagPuzzle> = {
   puzzles: FLAG_PUZZLES,
   getPuzzle: (id) => FLAG_PUZZLES.find((p) => p.id === id),
   getPuzzleForDay: (dayIndex) => puzzleForDay(FLAG_PUZZLES, dayIndex),
-  getAnswerKey: (puzzle) => puzzle.countries.map((code) => countryByCode(code).name).join(" → "),
+  getAnswerKey: (puzzle) => puzzle.countries.map((code) => countryByCode(code).name.en).join(" → "),
 
   initialize: (puzzle) => createState(ID, puzzle.id, ROUNDS * TRIES),
 
@@ -199,7 +194,7 @@ export const flagGame: GameModule<FlagPuzzle> = {
     const correct = guess.code === target.code;
     const attempts: Attempt[] = [
       ...state.attempts,
-      { value: guess.name, tone: correct ? "correct" : "wrong", feedback: correct ? "Correct" : "Wrong" },
+      { value: guess.name.en, tone: correct ? "correct" : "wrong", feedback: correct ? "Correct" : "Wrong" },
     ];
     const next: GameState = { ...state, attempts };
     const done = finishedRounds(next);
@@ -209,7 +204,7 @@ export const flagGame: GameModule<FlagPuzzle> = {
     const roundOver = done.length > finishedRounds(state).length;
     return {
       state: next,
-      message: correct ? tx.right : roundOver ? tx.itWas(displayName(target.name, lang)) : tx.not(displayName(guess.name, lang)),
+      message: correct ? tx.right : roundOver ? tx.itWas(displayName(target.name.en, lang)) : tx.not(displayName(guess.name.en, lang)),
     };
   },
 
