@@ -54,10 +54,7 @@ const valueOf = (item: HigherLowerItem, metricId: string): number => item.metric
 
 function formatValue(n: number, metricId: string): string {
   const unit = getHigherLowerMetric(metricId)?.unit;
-  let s: string;
-  if (n >= 1_000_000) s = `${(n / 1_000_000).toFixed(1)}M`;
-  else if (n >= 1_000) s = `${Math.round(n / 1_000)}K`;
-  else s = String(n);
+  const s = n.toLocaleString("en-US", { maximumFractionDigits: 2 });
   return unit ? `${s} ${unit}` : s;
 }
 
