@@ -9,6 +9,7 @@ export interface MoviePuzzle extends Puzzle {
   aliases?: string[];
   title: Movie["title"];
   posterUrl: string;
+  posterMask?: Movie["posterMask"];
 }
 
 export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
@@ -17,6 +18,7 @@ export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
   aliases: m.title.nl !== m.title.en ? [m.title.nl] : [],
   title: m.title,
   posterUrl: moviePosterUrl(m),
+  ...(m.posterMask ? { posterMask: m.posterMask } : {}),
 }));
 
 /** Autocomplete only — never used to decide if an answer is correct. */
