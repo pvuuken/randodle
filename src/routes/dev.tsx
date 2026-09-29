@@ -25,12 +25,13 @@ const buttonClass =
 
 function DevPage() {
   const games = listGames();
-  const [gameId, setGameId] = useState(games[0].id);
+  const fallback = games[0]!;
+  const [gameId, setGameId] = useState(fallback.id);
   const [puzzleIndex, setPuzzleIndex] = useState(0);
   const [notice, setNotice] = useState("");
 
-  const game = getGame(gameId) ?? games[0];
-  const puzzle = game.puzzles[Math.min(puzzleIndex, game.puzzles.length - 1)];
+  const game = getGame(gameId) ?? fallback;
+  const puzzle = game.puzzles[Math.min(puzzleIndex, game.puzzles.length - 1)]!;
 
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pb-20 pt-8">

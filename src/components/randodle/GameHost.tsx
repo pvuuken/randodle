@@ -44,7 +44,7 @@ export function GameHost({ edition, dayKey, game, puzzle, practice = false, tool
           score={session.score}
           streak={session.streak.current}
           practice={practice}
-          onPlayAgain={practice ? session.restart : undefined}
+          {...(practice ? { onPlayAgain: session.restart } : {})}
         />
       ) : (
         <>
