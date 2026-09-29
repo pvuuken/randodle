@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { movieGame } from "../src/games/movie";
-import { revealScale } from "../src/games/movie/PosterReveal";
+import { REVEAL_SCALES, revealScale } from "../src/games/movie/PosterReveal";
 import { MOVIE_LIST, moviePosterUrl } from "../src/data/movieList";
 
 const p = movieGame.puzzles[0];
@@ -31,8 +31,8 @@ test("game over shows the full poster (scale 1)", () => {
   expect(s.status).toBe("lost");
   expect(revealScale(s)).toBe(1);
 });
-test("a new daily game resets the reveal", () => {
-  expect(revealScale(movieGame.initialize(movieGame.getPuzzleForDay(5)))).toBe(3);
+test("a new daily game resets the reveal to scale 5", () => {
+  expect(revealScale(movieGame.initialize(movieGame.getPuzzleForDay(5)))).toBe(5);
 });
 test("poster URL comes from posterPath", () => {
   expect(p.posterUrl).toBe(moviePosterUrl(MOVIE_LIST[0]));
