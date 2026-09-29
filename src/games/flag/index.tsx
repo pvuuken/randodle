@@ -63,7 +63,7 @@ function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
     onSubmit(value);
     // Detect round end from the answer itself so we can show the reveal.
     const guess = matchCountry(value);
-    if (guess?.code === country.code || wrong + 1 >= TRIES) setReveal(before);
+    if (guess && (guess.code === country.code || wrong + 1 >= TRIES)) setReveal(before);
   };
 
   return (
