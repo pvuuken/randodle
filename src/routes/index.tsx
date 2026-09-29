@@ -4,6 +4,7 @@ import { dayIndex, dayKey } from "@/services/dateService";
 import { streakService } from "@/services/streakService";
 import { sessionService } from "@/services/sessionService";
 import { Countdown } from "@/components/randodle/Countdown";
+import { useTranslation } from "@/i18n";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -28,6 +29,8 @@ export const Route = createFileRoute("/")({
 
 /** Mystery homepage: shows today's edition only — never which game it is. */
 function Home() {
+  const { t } = useTranslation();
+  const h = t.home;
   const [edition, setEdition] = useState<number | null>(null);
   const [streak, setStreak] = useState(0);
   const [played, setPlayed] = useState(false);
@@ -46,17 +49,17 @@ function Home() {
         <h1 className="font-display text-5xl font-extrabold uppercase tracking-[0.06em] text-gradient sm:text-7xl">
           Randodle
         </h1>
-        <p className="mt-3 text-xl font-bold text-foreground sm:text-2xl">A different game every day.</p>
-        <p className="mt-1 text-sm text-muted-foreground">You never know what today's game will be.</p>
+        <p className="mt-3 text-xl font-bold text-foreground sm:text-2xl">{h.tagline}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{h.sub}</p>
         <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-warning/40 bg-warning/10 px-4 py-1.5 text-sm font-bold uppercase tracking-[0.12em] text-warning">
           <span aria-hidden="true">🔥</span>
-          {streak > 0 ? `${streak} day streak` : "Start your streak today"}
+          {streak > 0 ? h.streak(streak) : h.startStreak}
         </p>
       </section>
 
       <section className="surface-card animate-rise mt-8 p-6 text-center sm:p-8">
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-          Today's Randodle{edition ? ` · #${String(edition).padStart(3, "0")}` : ""}
+          {h.today}{edition ? ` · #${String(edition).padStart(3, "0")}` : ""}
         </p>
         <p
           aria-hidden="true"
@@ -65,21 +68,21 @@ function Home() {
           ?
         </p>
         <p className="mt-4 text-sm text-muted-foreground">
-          {played ? "You've played today's game." : "Today's game is a mystery until you press play."}
+          {played ? h.played : h.mystery}
         </p>
 
         <Link
           to="/play"
           className="mt-6 inline-flex min-h-14 w-full items-center justify-center rounded-xl bg-accent px-8 text-base font-bold uppercase tracking-[0.12em] text-accent-foreground shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] sm:w-auto"
         >
-          {played ? "See today's result →" : "Play today's game →"}
+          {played ? h.seeResult : h.play}
         </Link>
       </section>
 
       <section className="surface-card mt-6 p-5">
-        <Countdown label="New game in" />
+        <Countdown label={h.newGameIn} />
         <p className="mt-2 text-center text-sm text-muted-foreground">
-          Come back tomorrow for a completely different game.
+          {h.comeBack}
         </p>
       </section>
     </div>

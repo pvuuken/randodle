@@ -21,3 +21,4 @@
 - Cross-cutting behaviour (storage, streak, score, share, dates, daily schedule) lives in
   `src/services/*` and `src/engine/dailyGameService.ts`; components never touch
   `localStorage` directly, keeping a Supabase swap to one layer.
+- UI text lives in `src/i18n/{en,nl}.ts` behind `useTranslation()`; game-specific text stays inside each game module (`locales` + a per-game TEXT map) and puzzle translations in `src/data/*` — so language never affects which daily game/puzzle is served and new languages need no redesign.

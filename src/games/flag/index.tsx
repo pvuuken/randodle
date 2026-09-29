@@ -3,6 +3,47 @@ import { FLAG_COUNTRIES, FLAG_PUZZLES, type FlagCountry, type FlagPuzzle } from 
 import { createState, isComplete, normalise, puzzleForDay } from "@/engine/gameEngine";
 import type { Attempt, GameModule, GamePlayProps, GameState } from "@/types/game";
 import { GuessForm } from "@/components/game/GuessForm";
+import { COUNTRY_NAMES_NL } from "@/data/countries";
+import { getLanguage, useLanguage, type Language } from "@/i18n";
+
+const TEXT = {
+  en: {
+    round: "Round",
+    score: "Score",
+    alt: "Flag to identify",
+    correct: (p: number) => `✅ Correct! +${p}`,
+    out: (name: string) => `❌ Out of attempts — it was ${name}.`,
+    next: "Next flag",
+    remaining: "Attempts remaining:",
+    notThat: "❌ Not that one",
+    label: "Which country is this?",
+    placeholder: "Search for a country",
+    tried: "Tried:",
+    pick: "Pick a country from the list.",
+    right: "Correct!",
+    itWas: (name: string) => `It was ${name}.`,
+    not: (name: string) => `Not ${name}.`,
+  },
+  nl: {
+    round: "Ronde",
+    score: "Score",
+    alt: "Te raden vlag",
+    correct: (p: number) => `✅ Juist! +${p}`,
+    out: (name: string) => `❌ Geen pogingen meer — het was ${name}.`,
+    next: "Volgende vlag",
+    remaining: "Resterende pogingen:",
+    notThat: "❌ Die niet",
+    label: "Welk land is dit?",
+    placeholder: "Zoek een land",
+    tried: "Geprobeerd:",
+    pick: "Kies een land uit de lijst.",
+    right: "Juist!",
+    itWas: (name: string) => `Het was ${name}.`,
+    not: (name: string) => `Niet ${name}.`,
+  },
+};
+
+const displayName = (name: string, lang: Language) => (lang === "nl" ? (COUNTRY_NAMES_NL[name] ?? name) : name);
 
 const ID = "flag";
 const ROUNDS = 5;
@@ -16,7 +57,12 @@ const countryByCode = (code: string | undefined): FlagCountry =>
 
 function matchCountry(input: string): FlagCountry | undefined {
   const n = normalise(input);
-  return FLAG_COUNTRIES.find((x) => normalise(x.name) === n || x.aliases?.some((a) => normalise(a) === n));
+  return FLAG_COUNTRIES.find(
+    (x) =>
+      normalise(x.name) === n ||
+      normalise(COUNTRY_NAMES_NL[x.name] ?? "") === n ||
+      x.aliases?.some((a) => normalise(a) === n),
+  );
 }
 
 interface Round {
@@ -46,6 +92,8 @@ const finishedRounds = (state: GameState) => toRounds(state).filter((r) => r.don
 const score = (state: GameState) => finishedRounds(state).reduce((s, r) => s + r.points, 0);
 
 function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
+  const lang = useLanguage();
+  const tx = TEXT[lang];
   const rounds = toRounds(state);
   const finished = rounds.filter((r) => r.done).length;
   // Last finished round stays on screen until the player moves on.
@@ -69,14 +117,14 @@ function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
   return (
     <div className="space-y-6">
       <p className="text-center text-sm font-semibold text-muted-foreground">
-        Round <span className="text-foreground">{index + 1}</span> / {ROUNDS} · Score{" "}
+        {tx.round} <span className="text-foreground">{index + 1}</span> / {ROUNDS} · {tx.score}{" "}
         <span className="text-foreground">{score(state)}</span>
       </p>
 
       <div className="rounded-2xl border border-border bg-card p-5 shadow-card">
         <img
           src={country.flag}
-          alt="Flag to identify"
+          alt={tx.alt}
           className="mx-auto aspect-[4/3] w-full max-w-sm rounded-lg border border-border object-cover"
         />
       </div>
@@ -84,32 +132,32 @@ function FlagPlay({ puzzle, state, onSubmit }: GamePlayProps<FlagPuzzle>) {
       {shown ? (
         <div className="space-y-4 text-center">
           <p role="status" className="text-lg font-bold text-foreground">
-            {shown.solved ? `✅ Correct! +${shown.points}` : `❌ Out of attempts — it was ${country.name}.`}
+            {shown.solved ? tx.correct(shown.points) : tx.out(displayName(country.name, lang))}
           </p>
           <button
             type="button"
             onClick={() => setReveal(null)}
             className="min-h-14 w-full rounded-xl bg-accent px-5 text-lg font-extrabold uppercase tracking-[0.12em] text-accent-foreground shadow-glow transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]"
           >
-            Next flag
+            {tx.next}
           </button>
         </div>
       ) : (
         <>
           <p className="text-center text-sm font-semibold text-foreground">
-            Attempts remaining: {TRIES - wrong}
-            {wrong > 0 ? <span className="text-destructive"> · ❌ Not that one</span> : null}
+            {tx.remaining} {TRIES - wrong}
+            {wrong > 0 ? <span className="text-destructive"> · {tx.notThat}</span> : null}
           </p>
           <GuessForm
             key={`${index}-${wrong}`}
-            label="Which country is this?"
-            placeholder="Search for a country"
-            suggestions={FLAG_COUNTRIES.map((x) => x.name)}
+            label={tx.label}
+            placeholder={tx.placeholder}
+            suggestions={FLAG_COUNTRIES.map((x) => displayName(x.name, lang))}
             onSubmit={submit}
           />
           {round && round.guesses.length > 0 ? (
             <p className="text-center text-sm text-muted-foreground">
-              Tried: {round.guesses.map((g) => g.value).join(", ")}
+              {tx.tried} {round.guesses.map((g) => displayName(g.value, lang)).join(", ")}
             </p>
           ) : null}
         </>
@@ -126,6 +174,15 @@ export const flagGame: GameModule<FlagPuzzle> = {
   prompt: "Five flags, three tries each. Name the country.",
   howToPlay:
     "Identify 5 flags. You get 3 attempts per flag: 100 points on the first try, 75 on the second, 50 on the third. After 3 misses the answer is revealed.",
+  locales: {
+    nl: {
+      name: "Raad de vlag",
+      category: "Aardrijkskunde",
+      prompt: "Vijf vlaggen, drie pogingen per vlag. Noem het land.",
+      howToPlay:
+        "Herken 5 vlaggen. Je hebt 3 pogingen per vlag: 100 punten bij de eerste poging, 75 bij de tweede, 50 bij de derde. Na 3 missers wordt het antwoord getoond.",
+    },
+  },
   maxAttempts: ROUNDS * TRIES,
   maxScore: ROUNDS * 100,
 
@@ -137,8 +194,10 @@ export const flagGame: GameModule<FlagPuzzle> = {
   initialize: (puzzle) => createState(ID, puzzle.id, ROUNDS * TRIES),
 
   submitAnswer(state, puzzle, answer) {
+    const lang = getLanguage();
+    const tx = TEXT[lang];
     const guess = matchCountry(answer);
-    if (!guess) return { state, message: "Pick a country from the list." };
+    if (!guess) return { state, message: tx.pick };
     const target = countryByCode(puzzle.countries[finishedRounds(state).length]);
     const correct = guess.code === target.code;
     const attempts: Attempt[] = [
@@ -153,7 +212,7 @@ export const flagGame: GameModule<FlagPuzzle> = {
     const roundOver = done.length > finishedRounds(state).length;
     return {
       state: next,
-      message: correct ? "Correct!" : roundOver ? `It was ${target.name}.` : `Not ${guess.name}.`,
+      message: correct ? tx.right : roundOver ? tx.itWas(displayName(target.name, lang)) : tx.not(displayName(guess.name, lang)),
     };
   },
 
