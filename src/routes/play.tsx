@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { GameHost } from "@/components/randodle/GameHost";
-import { getDailyGame } from "@/engine/dailyGameService";
+import { useDailyGame } from "@/hooks/useDailyGame";
 
 export const Route = createFileRoute("/play")({
   head: () => ({
@@ -19,10 +18,11 @@ export const Route = createFileRoute("/play")({
 });
 
 function PlayPage() {
-  const daily = useMemo(() => getDailyGame(), []);
+  const daily = useDailyGame();
   return (
     <main className="mx-auto w-full max-w-2xl px-5 pb-20 pt-8 sm:pt-12">
       <GameHost
+        key={daily.dayKey}
         edition={daily.edition}
         dayKey={daily.dayKey}
         game={daily.game}
