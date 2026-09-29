@@ -1,7 +1,6 @@
 import { COUNTRY_NAMES, COUNTRY_PUZZLES, type CountryPuzzle } from "@/data/countries";
 import {
   createState,
-  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   normalise,
   pushAttempt,
@@ -86,6 +85,7 @@ export const countryGame: GameModule<CountryPuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

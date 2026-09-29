@@ -1,7 +1,6 @@
 import { MOVIE_PUZZLES, MOVIE_TITLES, type MoviePuzzle } from "@/data/movies";
 import {
   createState,
-  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   normalise,
   pushAttempt,
@@ -80,6 +79,7 @@ export const movieGame: GameModule<MoviePuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

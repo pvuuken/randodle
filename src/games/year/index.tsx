@@ -1,7 +1,6 @@
 import { YEAR_PUZZLES, YEAR_RANGE, type YearPuzzle } from "@/data/years";
 import {
   createState,
-  getLossAnswer: (puzzle) => String(puzzle.answer),
   isComplete,
   pushAttempt,
   puzzleForDay,
@@ -93,6 +92,7 @@ export const yearGame: GameModule<YearPuzzle> = {
     };
   },
 
+  getLossAnswer: (puzzle) => String(puzzle.answer),
   isComplete,
   calculateScore: yearScore,
   getShareResult: standardShare,
