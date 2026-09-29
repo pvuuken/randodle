@@ -86,7 +86,8 @@ function ItemCard({ item, value, label }: { item: HigherLowerItem; value: string
 function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerPuzzle>) {
   // Round just answered, kept on screen until the player moves on.
   const [revealed, setRevealed] = useState<number | null>(null);
-  const tx = TEXT[useLanguage()];
+  const lang = useLanguage();
+  const tx = TEXT[lang];
   const answered = state.attempts.length;
   useEffect(() => setRevealed(null), [puzzle.id]);
 
@@ -94,6 +95,8 @@ function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerP
   const reference = itemById(puzzle.chain[showing]);
   const challenger = itemById(puzzle.chain[showing + 1]);
   const result: Attempt | undefined = revealed !== null ? state.attempts[revealed] : undefined;
+  const metric = getHigherLowerMetric(puzzle.metricId);
+  const fmt = (item: HigherLowerItem) => formatValue(valueOf(item, puzzle.metricId), puzzle.metricId);
 
   const choose = (choice: "higher" | "lower") => {
     setRevealed(answered);
@@ -107,18 +110,14 @@ function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerP
     <div className="space-y-6">
       <p className="text-center text-sm font-semibold text-muted-foreground">
         {tx.round} <span className="text-foreground">{showing + 1}</span> / {ROUNDS} ·{" "}
-        {tx.categories[puzzle.category] ?? puzzle.category} · {tx.score}{" "}
+        {metric ? metric.label[lang] : puzzle.metricId} · {tx.score}{" "}
         <span className="text-foreground">{correctCount(state) * POINTS_PER_ROUND}</span>
       </p>
 
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
-        <ItemCard item={reference} label={tx.known} value={formatPopulation(reference.population)} />
+        <ItemCard item={reference} label={tx.known} value={fmt(reference)} />
         <p className="text-center font-display text-lg font-extrabold text-muted-foreground">VS</p>
-        <ItemCard
-          item={challenger}
-          label={tx.guess}
-          value={result ? formatPopulation(challenger.population) : "???"}
-        />
+        <ItemCard item={challenger} label={tx.guess} value={result ? fmt(challenger) : "???"} />
       </div>
 
       {result ? (
@@ -183,7 +182,7 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
     const round = state.attempts.length;
     const reference = itemById(puzzle.chain[round]);
     const challenger = itemById(puzzle.chain[round + 1]);
-    const isHigher = challenger.population > reference.population;
+    const isHigher = valueOf(challenger, puzzle.metricId) > valueOf(reference, puzzle.metricId);
     const correct = (choice === "higher") === isHigher;
 
     const attempts: Attempt[] = [
@@ -198,7 +197,7 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
     };
     return {
       state: next,
-      message: `${challenger.name}: ${formatPopulation(challenger.population)} — ${tx.verdict(correct)}.`,
+      message: `${itemName(challenger, getLanguage())}: ${formatValue(valueOf(challenger, puzzle.metricId), puzzle.metricId)} — ${tx.verdict(correct)}.`,
     };
   },
 
