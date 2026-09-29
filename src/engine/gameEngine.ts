@@ -49,5 +49,5 @@ export function standardShare(state: GameState): ShareResult {
 /** Deterministic puzzle pick so everyone gets the same one on the same date. */
 export function puzzleForDay<T>(puzzles: T[], dayIndex: number): T {
   const i = ((dayIndex % puzzles.length) + puzzles.length) % puzzles.length;
-  return puzzles[i];
+  return puzzles[i] as T;
 }

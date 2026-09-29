@@ -19,7 +19,8 @@ export interface DailyGame {
 export function getDailyGame(date: Date = new Date()): DailyGame {
   const index = dayIndex(date);
   const rotation = ((index % GAME_ROTATION.length) + GAME_ROTATION.length) % GAME_ROTATION.length;
-  const game = GAME_REGISTRY[GAME_ROTATION[rotation]];
+  const gameId = GAME_ROTATION[rotation] as string;
+  const game = GAME_REGISTRY[gameId] as RegisteredGame;
   return {
     edition: Math.max(1, index + 1),
     dayKey: dayKey(date),
