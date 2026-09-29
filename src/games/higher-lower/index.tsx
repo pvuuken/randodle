@@ -2,18 +2,19 @@ import { useEffect, useState } from "react";
 import {
   HIGHER_LOWER_ITEMS,
   HIGHER_LOWER_PUZZLES,
+  getHigherLowerItem,
+  getHigherLowerMetric,
   type HigherLowerItem,
   type HigherLowerPuzzle,
 } from "@/data/higherLower";
 import { createState, isComplete, puzzleForDay } from "@/engine/gameEngine";
 import type { Attempt, GameModule, GamePlayProps, GameState } from "@/types/game";
-import { getLanguage, useLanguage } from "@/i18n";
+import { getLanguage, useLanguage, type Language } from "@/i18n";
 
 const TEXT = {
   en: {
     round: "Round",
     score: "Score",
-    categories: {} as Record<string, string>,
     known: "Known",
     guess: "Higher or lower?",
     correct: "✅ Correct! +100",
@@ -27,7 +28,6 @@ const TEXT = {
   nl: {
     round: "Ronde",
     score: "Score",
-    categories: { Population: "Inwoners" } as Record<string, string>,
     known: "Bekend",
     guess: "Hoger of lager?",
     correct: "✅ Juist! +100",
@@ -47,26 +47,41 @@ const POINTS_PER_ROUND = 100;
 const WIN_THRESHOLD = 3;
 
 const itemById = (id: string | undefined): HigherLowerItem =>
-  (HIGHER_LOWER_ITEMS.find((i) => i.id === id) ?? HIGHER_LOWER_ITEMS[0]) as HigherLowerItem;
+  (getHigherLowerItem(id) ?? HIGHER_LOWER_ITEMS[0]) as HigherLowerItem;
 
-function formatPopulation(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${Math.round(n / 1_000)}K`;
-  return String(n);
+/** Value of the puzzle's metric — the engine never assumes which metric it is. */
+const valueOf = (item: HigherLowerItem, metricId: string): number => item.metrics[metricId] ?? 0;
+
+function formatValue(n: number, metricId: string): string {
+  const unit = getHigherLowerMetric(metricId)?.unit;
+  let s: string;
+  if (n >= 1_000_000) s = `${(n / 1_000_000).toFixed(1)}M`;
+  else if (n >= 1_000) s = `${Math.round(n / 1_000)}K`;
+  else s = String(n);
+  return unit ? `${s} ${unit}` : s;
 }
+
+const itemName = (item: HigherLowerItem, lang: Language) => item.name[lang] ?? item.name.en;
 
 const correctCount = (state: GameState) => state.attempts.filter((a) => a.tone === "correct").length;
 
 function ItemCard({ item, value, label }: { item: HigherLowerItem; value: string; label: string }) {
+  const lang = useLanguage();
+  const emoji = item.metadata?.emoji;
   return (
     <div className="flex-1 rounded-2xl border border-border bg-card px-4 py-5 text-center shadow-card">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-      <p className="mt-2 text-4xl" aria-hidden="true">{item.flag}</p>
-      <p className="mt-2 text-xl font-bold text-foreground">{item.name}</p>
+      {emoji ? (
+        <p className="mt-2 text-4xl" aria-hidden="true">{emoji}</p>
+      ) : item.image ? (
+        <img src={item.image.url} alt="" className="mx-auto mt-2 h-10 w-auto rounded" />
+      ) : null}
+      <p className="mt-2 text-xl font-bold text-foreground">{itemName(item, lang)}</p>
       <p className="mt-1 font-mono text-2xl font-bold tabular-nums text-accent">{value}</p>
     </div>
   );
 }
+
 
 function HigherLowerPlay({ puzzle, state, onSubmit }: GamePlayProps<HigherLowerPuzzle>) {
   // Round just answered, kept on screen until the player moves on.
