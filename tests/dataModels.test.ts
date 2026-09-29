@@ -13,6 +13,7 @@ const unique = (xs: string[]) => new Set(xs).size === xs.length;
 describe("YearEvent", () => {
   test("all 200 production events load", () => expect(YEAR_EVENTS.length).toBe(200));
   test("ids are unique", () => expect(unique(YEAR_EVENTS.map((e) => e.id))).toBe(true));
+  test("event texts are unique", () => expect(unique(YEAR_EVENTS.map((e) => e.event.en))).toBe(true));
   test("valid years, EN+NL text, category, source", () => {
     for (const e of YEAR_EVENTS) {
       expect(Number.isInteger(e.year)).toBe(true);
