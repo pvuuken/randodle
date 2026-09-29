@@ -5,6 +5,7 @@ import { Countdown } from "@/components/randodle/Countdown";
 import { getGame, listGames } from "@/engine/gameRegistry";
 import { storageService } from "@/services/storageService";
 import { streakService } from "@/services/streakService";
+import { statsService } from "@/services/statsService";
 import { dayKey } from "@/services/dateService";
 
 export const Route = createFileRoute("/dev")({
@@ -83,10 +84,32 @@ function DevPage() {
             className={buttonClass}
             onClick={() => {
               streakService.reset();
-              setNotice("Streak and statistics reset.");
+              statsService.clear();
+              setNotice("Streak, statistics and history reset.");
             }}
           >
             Reset streak
+          </button>
+          <button
+            type="button"
+            className={buttonClass}
+            onClick={() => {
+              // Sample history for the last 6 UTC days (today excluded), through the real services.
+              const now = Date.now();
+              for (let i = 6; i >= 1; i--) {
+                const date = new Date(now - i * 86_400_000);
+                const g = games[i % games.length]!;
+                const max = g.maxScore ?? 100;
+                const score = Math.round((max * ((i * 37) % 100)) / 100 / 10) * 10;
+                const day = dayKey(date);
+                const won = score >= max / 2;
+                streakService.recordCompletion({ won, score, day });
+                statsService.recordResult({ day, gameId: g.id, score, maxScore: max, won });
+              }
+              setNotice("Seeded 6 days of sample history. Open /stats.");
+            }}
+          >
+            Seed history
           </button>
           <button
             type="button"
