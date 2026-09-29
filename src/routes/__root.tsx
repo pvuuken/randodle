@@ -131,7 +131,7 @@ function RootComponent() {
           <Outlet />
         </div>
         <footer className="border-t border-border/60 px-5 py-6 text-center text-xs text-muted-foreground">
-          Randodle · one puzzle a day · demo content for v0.1
+          Randodle · one puzzle a day
         </footer>
       </div>
     </QueryClientProvider>

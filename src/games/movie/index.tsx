@@ -1,6 +1,7 @@
 import { MOVIE_PUZZLES, MOVIE_TITLES, type MoviePuzzle } from "@/data/movies";
 import {
   createState,
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   normalise,
   pushAttempt,

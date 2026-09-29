@@ -1,6 +1,7 @@
 import { COUNTRY_NAMES, COUNTRY_PUZZLES, type CountryPuzzle } from "@/data/countries";
 import {
   createState,
+  getLossAnswer: (puzzle) => puzzle.answer,
   isComplete,
   normalise,
   pushAttempt,

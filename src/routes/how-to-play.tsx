@@ -52,8 +52,9 @@ function HowToPlay() {
           Scoring &amp; streaks
         </h2>
         <p>
-          Every puzzle is scored out of 100 — solve it on the first attempt for full marks, and fewer points
-          for each extra guess. A miss scores zero.
+          Scoring depends on the game. Single-answer games reward solving in fewer attempts, while games
+          with several rounds add up points for every round you get right. Your result screen always shows
+          your score against that game's maximum.
         </p>
         <p>
           Your streak belongs to Randodle, not to a single game: finishing the day's puzzle keeps it alive
