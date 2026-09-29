@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DevRouteImport } from './routes/dev'
 import { Route as HowToPlayRouteImport } from './routes/how-to-play'
 import { Route as PlayRouteImport } from './routes/play'
+import { Route as StatsRouteImport } from './routes/stats'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const PlayRoute = PlayRouteImport.update({
   path: '/play',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StatsRoute = StatsRouteImport.update({
+  id: '/stats',
+  path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
+  '/stats': typeof StatsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
+  '/stats': typeof StatsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
+  '/stats': typeof StatsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dev' | '/how-to-play' | '/play'
+  fullPaths: '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dev' | '/how-to-play' | '/play'
-  id: '__root__' | '/' | '/dev' | '/how-to-play' | '/play'
+  to: '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
+  id: '__root__' | '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   DevRoute: typeof DevRoute
   HowToPlayRoute: typeof HowToPlayRoute
   PlayRoute: typeof PlayRoute
+  StatsRoute: typeof StatsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/stats': {
+      id: '/stats'
+      path: '/stats'
+      fullPath: '/stats'
+      preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   DevRoute: DevRoute,
   HowToPlayRoute: HowToPlayRoute,
   PlayRoute: PlayRoute,
+  StatsRoute: StatsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameState, Puzzle, RegisteredGame } from "@/types/game";
 import { sessionService } from "@/services/sessionService";
 import { streakService, type StreakState } from "@/services/streakService";
+import { statsService } from "@/services/statsService";
 
 interface Options {
   game: RegisteredGame;
@@ -54,7 +55,9 @@ export function useGameSession({ game, puzzle, dayKey, persist = true }: Options
 
       if (complete && persist && !recorded.current) {
         recorded.current = true;
-        setStreak(streakService.recordCompletion({ won: next.status === "won", score, day: dayKey }));
+        const won = next.status === "won";
+        setStreak(streakService.recordCompletion({ won, score, day: dayKey }));
+        statsService.recordResult({ day: dayKey, gameId: game.id, score, maxScore: game.maxScore ?? 100, won });
       }
       if (persist) {
         sessionService.save(dayKey, {
