@@ -46,8 +46,10 @@ export function standardShare(state: GameState): ShareResult {
   };
 }
 
-/** Deterministic puzzle pick so everyone gets the same one on the same date. */
-export function puzzleForDay<T>(puzzles: T[], dayIndex: number): T {
-  const i = ((dayIndex % puzzles.length) + puzzles.length) % puzzles.length;
-  return puzzles[i] as T;
+/**
+ * Stable puzzle pick for a Randodle day index (days since RANDODLE_EPOCH).
+ * Independent of array order: pinned schedule first, then rendezvous hashing.
+ */
+export function puzzleForDay<T extends { id: string }>(puzzles: T[], dayIndex: number): T {
+  return resolvePuzzle(puzzles, dayKey(new Date(RANDODLE_EPOCH + dayIndex * 86_400_000)));
 }
