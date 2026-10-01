@@ -26,6 +26,6 @@ export function getDailyGame(date: Date = new Date()): DailyGame {
     dayKey: dayKey(date),
     dayIndex: index,
     game,
-    puzzle: game.getPuzzleForDay(Math.floor(index / GAME_ROTATION.length)),
+    puzzle: game.getPuzzleForDay(index),
   };
 }

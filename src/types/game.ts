@@ -80,6 +80,7 @@ export interface GameModule<P extends Puzzle = Puzzle> {
   puzzles: P[];
   getPuzzle(puzzleId: string): P | undefined;
   /** Deterministic puzzle for a given day index. */
+  /** dayIndex = days since RANDODLE_EPOCH (UTC); mapping is stable across pool edits. */
   getPuzzleForDay(dayIndex: number): P;
   /** Optional spoiler text shown only in test mode. */
   getAnswerKey?(puzzle: P): string;
