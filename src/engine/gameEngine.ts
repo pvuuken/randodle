@@ -1,4 +1,6 @@
 import type { Attempt, GameState, ShareResult } from "@/types/game";
+import { resolvePuzzle } from "./puzzleSchedule";
+import { dayKey, RANDODLE_EPOCH } from "@/services/dateService";
 
 /** Shared, game-agnostic helpers every module can reuse. */
 
