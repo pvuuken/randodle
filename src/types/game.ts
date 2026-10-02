@@ -52,12 +52,12 @@ export interface ShareResult {
 export interface AnswerReviewItem {
   question: string;
   /** Optional image shown with the question (e.g. a flag). */
-  image?: string;
+  image?: string | undefined;
   /** What the player submitted, when the game has such a thing. */
-  yourAnswer?: string;
+  yourAnswer?: string | undefined;
   correctAnswer: string;
   /** Whether the player got this one right, when applicable. */
-  correct?: boolean;
+  correct?: boolean | undefined;
 }
 
 export interface GamePlayProps<P> {
