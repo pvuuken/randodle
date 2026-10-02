@@ -168,6 +168,24 @@ export const higherLowerGame: GameModule<HigherLowerPuzzle> = {
   getPuzzle: (id) => HIGHER_LOWER_PUZZLES.find((p) => p.id === id),
   getPuzzleForDay: (dayIndex) => puzzleForDay(HIGHER_LOWER_PUZZLES, dayIndex),
 
+  getAnswerReview: (puzzle, state, lang) => {
+    const tx = TEXT[lang];
+    const metric = getHigherLowerMetric(puzzle.metricId);
+    const label = (c: string) => (c === "higher" ? tx.higher : tx.lower);
+    return Array.from({ length: ROUNDS }, (_, i) => {
+      const ref = itemById(puzzle.chain[i]);
+      const ch = itemById(puzzle.chain[i + 1]);
+      const answer = valueOf(ch, puzzle.metricId) > valueOf(ref, puzzle.metricId) ? "higher" : "lower";
+      const a = state.attempts[i];
+      return {
+        question: `${itemName(ch, lang)} vs ${itemName(ref, lang)} (${formatValue(valueOf(ref, puzzle.metricId), puzzle.metricId)})${metric ? ` · ${metric.label[lang]}` : ""}`,
+        yourAnswer: a ? label(a.value) : undefined,
+        correctAnswer: `${label(answer)} — ${formatValue(valueOf(ch, puzzle.metricId), puzzle.metricId)}`,
+        correct: a?.tone === "correct",
+      };
+    });
+  },
+
   initialize: (puzzle) => createState(ID, puzzle.id, ROUNDS),
 
   submitAnswer(state, puzzle, answer) {

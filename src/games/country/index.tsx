@@ -7,7 +7,7 @@ import {
   standardShare,
 } from "@/engine/gameEngine";
 import { standardScore } from "@/services/scoreService";
-import { countryByCode, countrySuggestions, resolveCountry } from "@/services/countryService";
+import { countryByCode, countrySuggestions, localizeCountry, resolveCountry } from "@/services/countryService";
 import type { GameModule, GamePlayProps } from "@/types/game";
 import { AttemptCounter, AttemptTrail } from "@/components/game/AttemptTrail";
 import { ClueList } from "@/components/game/ClueList";
@@ -122,6 +122,14 @@ export const countryGame: GameModule<CountryPuzzle> = {
   },
 
   getLossAnswer: (puzzle) => displayName(puzzle.countryCode, getLanguage()),
+  getAnswerReview: (puzzle, state, lang) => [
+    {
+      question: TEXT[lang].label,
+      yourAnswer: state.attempts.map((a) => localizeCountry(a.value, lang)).join(" → ") || undefined,
+      correctAnswer: displayName(puzzle.countryCode, lang),
+      correct: state.status === "won",
+    },
+  ],
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

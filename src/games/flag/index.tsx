@@ -183,6 +183,20 @@ export const flagGame: GameModule<FlagPuzzle> = {
   getPuzzleForDay: (dayIndex) => puzzleForDay(FLAG_PUZZLES, dayIndex),
   getAnswerKey: (puzzle) => puzzle.countries.map((code) => countryByCode(code).name.en).join(" → "),
 
+  getAnswerReview: (puzzle, state, lang) => {
+    const rounds = toRounds(state);
+    return puzzle.countries.map((code, i) => {
+      const r = rounds[i];
+      return {
+        question: `${TEXT[lang].round} ${i + 1}`,
+        image: countryByCode(code).flag,
+        yourAnswer: r?.guesses.map((g) => displayName(g.value, lang)).join(" → ") || undefined,
+        correctAnswer: countryByCode(code).name[lang],
+        correct: r?.solved ?? false,
+      };
+    });
+  },
+
   initialize: (puzzle) => createState(ID, puzzle.id, ROUNDS * TRIES),
 
   submitAnswer(state, puzzle, answer) {

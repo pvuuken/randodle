@@ -124,6 +124,15 @@ export const movieGame: GameModule<MoviePuzzle> = {
   },
 
   getLossAnswer: (puzzle) => puzzle.title[getLanguage()],
+  getAnswerReview: (puzzle, state, lang) => [
+    {
+      question: lang === "nl" ? "Welke film is dit?" : "Which movie is this?",
+      image: puzzle.posterUrl,
+      yourAnswer: state.attempts.map((a) => a.value).join(" → ") || undefined,
+      correctAnswer: puzzle.title[lang],
+      correct: state.status === "won",
+    },
+  ],
   isComplete,
   calculateScore: standardScore,
   getShareResult: standardShare,

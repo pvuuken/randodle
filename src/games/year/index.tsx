@@ -137,6 +137,14 @@ export const yearGame: GameModule<YearPuzzle> = {
   },
 
   getLossAnswer: (puzzle) => String(puzzle.answer),
+  getAnswerReview: (puzzle, state, lang) => [
+    {
+      question: puzzle.translations?.[lang]?.event ?? puzzle.event,
+      yourAnswer: state.attempts.map((a) => a.value).join(" → ") || undefined,
+      correctAnswer: String(puzzle.answer),
+      correct: state.status === "won",
+    },
+  ],
   isComplete,
   calculateScore: yearScore,
   getShareResult: standardShare,

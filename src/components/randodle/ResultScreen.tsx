@@ -124,6 +124,17 @@ export function ResultScreen({
         {text}
       </pre>
 
+      {!practice ? (
+        <div className="mt-4 text-center">
+          <Link
+            to="/answers"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl px-4 text-sm font-semibold text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {r.viewAnswers}
+          </Link>
+        </div>
+      ) : null}
+
       {practice ? (
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           {onPlayAgain ? (
