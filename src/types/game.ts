@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { Localized } from "@/i18n";
+import type { Language, Localized } from "@/i18n";
 
 /** Status of a single play session. */
 export type GameStatus = "playing" | "won" | "lost";
@@ -48,6 +48,18 @@ export interface ShareResult {
   progress: string;
 }
 
+/** One question/challenge on the post-game answers view. */
+export interface AnswerReviewItem {
+  question: string;
+  /** Optional image shown with the question (e.g. a flag). */
+  image?: string;
+  /** What the player submitted, when the game has such a thing. */
+  yourAnswer?: string;
+  correctAnswer: string;
+  /** Whether the player got this one right, when applicable. */
+  correct?: boolean;
+}
+
 export interface GamePlayProps<P> {
   puzzle: P;
   state: GameState;
@@ -86,6 +98,9 @@ export interface GameModule<P extends Puzzle = Puzzle> {
   getAnswerKey?(puzzle: P): string;
   /** Single correct answer revealed on the result screen after a loss. Omit for multi-round games. */
   getLossAnswer?(puzzle: P): string;
+
+  /** Full answer review for a completed game. Never called while playing. */
+  getAnswerReview(puzzle: P, state: GameState, lang: Language): AnswerReviewItem[];
 
   initialize(puzzle: P): GameState;
   submitAnswer(state: GameState, puzzle: P, answer: string): GameResult;
