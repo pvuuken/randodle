@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnswersRouteImport } from './routes/answers'
 import { Route as DevRouteImport } from './routes/dev'
 import { Route as HowToPlayRouteImport } from './routes/how-to-play'
 import { Route as PlayRouteImport } from './routes/play'
@@ -18,6 +19,11 @@ import { Route as StatsRouteImport } from './routes/stats'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnswersRoute = AnswersRouteImport.update({
+  id: '/answers',
+  path: '/answers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DevRoute = DevRouteImport.update({
@@ -43,6 +49,7 @@ const StatsRoute = StatsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/answers': typeof AnswersRoute
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/answers': typeof AnswersRoute
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/answers': typeof AnswersRoute
   '/dev': typeof DevRoute
   '/how-to-play': typeof HowToPlayRoute
   '/play': typeof PlayRoute
@@ -65,14 +74,16 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
+  fullPaths: '/' | '/answers' | '/dev' | '/how-to-play' | '/play' | '/stats'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
-  id: '__root__' | '/' | '/dev' | '/how-to-play' | '/play' | '/stats'
+  to: '/' | '/answers' | '/dev' | '/how-to-play' | '/play' | '/stats'
+  id:
+    '__root__' | '/' | '/answers' | '/dev' | '/how-to-play' | '/play' | '/stats'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnswersRoute: typeof AnswersRoute
   DevRoute: typeof DevRoute
   HowToPlayRoute: typeof HowToPlayRoute
   PlayRoute: typeof PlayRoute
@@ -86,6 +97,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/answers': {
+      id: '/answers'
+      path: '/answers'
+      fullPath: '/answers'
+      preLoaderRoute: typeof AnswersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dev': {
@@ -121,6 +139,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnswersRoute: AnswersRoute,
   DevRoute: DevRoute,
   HowToPlayRoute: HowToPlayRoute,
   PlayRoute: PlayRoute,
