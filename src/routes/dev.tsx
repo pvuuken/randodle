@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { GameHost } from "@/components/randodle/GameHost";
 import { Countdown } from "@/components/randodle/Countdown";
@@ -9,6 +9,10 @@ import { statsService } from "@/services/statsService";
 import { dayKey } from "@/services/dateService";
 
 export const Route = createFileRoute("/dev")({
+  // Development-only: production builds treat /dev as a missing page.
+  beforeLoad: () => {
+    if (!import.meta.env.DEV) throw notFound();
+  },
   head: () => ({
     meta: [
       { title: "Randodle test mode" },
@@ -25,6 +29,11 @@ const buttonClass =
   "min-h-11 rounded-lg border border-border px-3 text-xs font-bold uppercase tracking-wide text-foreground transition hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 function DevPage() {
+  if (!import.meta.env.DEV) return null;
+  return <DevHarness />;
+}
+
+function DevHarness() {
   const games = listGames();
   const fallback = games[0]!;
   const [gameId, setGameId] = useState(fallback.id);
