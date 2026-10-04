@@ -36,6 +36,7 @@ export const nl: Dictionary = {
   },
   countdown: { next: "Volgende Randodle" },
   game: {
+    loading: "Je spel wordt geladen…",
     practice: "Oefenen",
     attempts: "Poging",
     yourGuesses: "Jouw gokken",

@@ -35,6 +35,7 @@ export const en = {
   },
   countdown: { next: "Next Randodle" },
   game: {
+    loading: "Loading your game…",
     practice: "Practice",
     attempts: "Attempts",
     yourGuesses: "Your guesses",
