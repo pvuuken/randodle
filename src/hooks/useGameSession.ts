@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameState, Puzzle, RegisteredGame } from "@/types/game";
-import { sessionService } from "@/services/sessionService";
+import { sessionService, type StoredSession } from "@/services/sessionService";
 import { streakService, type StreakState } from "@/services/streakService";
 import { statsService } from "@/services/statsService";
 
@@ -24,6 +24,23 @@ export interface GameSession {
   forceFinish: (outcome: "win" | "lose") => void;
 }
 
+/** Saved progress for this exact game + puzzle, or a fresh session. */
+export function restoreSession(
+  game: RegisteredGame,
+  puzzle: Puzzle,
+  stored: StoredSession | null,
+): { state: GameState; recorded: boolean } {
+  if (stored && stored.gameId === game.id && stored.puzzleId === puzzle.id) {
+    return { state: stored.state, recorded: stored.recorded };
+  }
+  return { state: game.initialize(puzzle), recorded: false };
+}
+
+/** Input is accepted only after saved progress has loaded, and never on a finished game. */
+export function canAcceptInput(hydrated: boolean, game: RegisteredGame, state: GameState): boolean {
+  return hydrated && !game.isComplete(state);
+}
+
 export function useGameSession({ game, puzzle, dayKey, persist = true }: Options): GameSession {
   const [state, setState] = useState<GameState>(() => game.initialize(puzzle));
   const [message, setMessage] = useState("");
@@ -35,12 +52,9 @@ export function useGameSession({ game, puzzle, dayKey, persist = true }: Options
   useEffect(() => {
     recorded.current = false;
     const stored = persist ? sessionService.load(dayKey) : null;
-    if (stored && stored.gameId === game.id && stored.puzzleId === puzzle.id) {
-      setState(stored.state);
-      recorded.current = stored.recorded;
-    } else {
-      setState(game.initialize(puzzle));
-    }
+    const restored = restoreSession(game, puzzle, stored);
+    setState(restored.state);
+    recorded.current = restored.recorded;
     setMessage("");
     setStreak(streakService.get());
     setHydrated(true);
@@ -74,11 +88,11 @@ export function useGameSession({ game, puzzle, dayKey, persist = true }: Options
 
   const submit = useCallback(
     (answer: string) => {
-      if (game.isComplete(state)) return;
+      if (!canAcceptInput(hydrated, game, state)) return;
       const result = game.submitAnswer(state, puzzle, answer);
       commit(result.state, result.message);
     },
-    [game, puzzle, state, commit],
+    [game, puzzle, state, commit, hydrated],
   );
 
   const restart = useCallback(() => {

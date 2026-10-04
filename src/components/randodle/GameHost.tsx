@@ -39,7 +39,12 @@ export function GameHost({ edition, dayKey, game, puzzle, practice = false, tool
         <p className="mt-2 text-sm text-muted-foreground">{text.prompt}</p>
       </header>
 
-      {complete ? (
+      {!session.hydrated ? (
+        // Saved progress is still loading: no board, so no input can be lost.
+        <p role="status" aria-live="polite" className="min-h-6 text-center text-sm text-muted-foreground">
+          {t.game.loading}
+        </p>
+      ) : complete ? (
         <ResultScreen
           edition={edition}
           game={text}
