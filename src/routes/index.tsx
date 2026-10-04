@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { dayIndex, dayKey } from "@/services/dateService";
+import { useDailyGame } from "@/hooks/useDailyGame";
 import { streakService } from "@/services/streakService";
 import { sessionService } from "@/services/sessionService";
 import { Countdown } from "@/components/randodle/Countdown";
@@ -35,13 +35,15 @@ function Home() {
   const [streak, setStreak] = useState(0);
   const [played, setPlayed] = useState(false);
 
+  // Same UTC day tracker as /play: re-runs when the day rolls over at midnight.
+  const daily = useDailyGame();
+
   useEffect(() => {
-    const key = dayKey();
-    setEdition(Math.max(1, dayIndex() + 1));
+    setEdition(daily.edition);
     setStreak(streakService.displayStreak());
-    const session = sessionService.load(key);
+    const session = sessionService.load(daily.dayKey);
     setPlayed(Boolean(session && session.state.status !== "playing"));
-  }, []);
+  }, [daily.dayKey, daily.edition]);
 
   return (
     <div className="mx-auto w-full max-w-3xl px-5 pb-20 pt-8 sm:pt-14">
