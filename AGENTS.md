@@ -26,3 +26,4 @@
 - Real films live in `src/data/movieList.ts` (approved 200, stable slug ids, TMDB id + poster path only; posters are referenced, never stored in the repo) — so the Movie Game can switch to it later without new data plumbing.
 - Year events and Higher/Lower items/metrics/datasets live in `src/data/yearEvents.ts` and `src/data/higherLower/` (types, metrics, datasets, items); puzzles pick a dataset + metric id and the game reads `item.metrics[metricId]` — so new metrics or datasets need no game changes.
 - Daily puzzles resolve via `src/engine/puzzleSchedule.ts`: pinned dates in `src/data/dailySchedule.ts`, otherwise rendezvous hashing on dayKey + puzzle id — so editing or reordering a pool never shifts other dates.
+- The saved language is mirrored in the `randodle-lang` cookie and read by the root loader (`src/i18n/initialLanguage.ts`) — so the server renders the saved language first and Dutch users never see an English flash.

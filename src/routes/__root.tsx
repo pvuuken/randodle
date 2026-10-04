@@ -12,7 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteHeader } from "@/components/randodle/SiteHeader";
-import { useTranslation } from "@/i18n";
+import { InitialLanguageContext, useTranslation } from "@/i18n";
+import { readInitialLanguage } from "@/i18n/initialLanguage";
 
 function NotFoundComponent() {
   const { t } = useTranslation();
@@ -102,6 +103,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
+  // Saved language known before the first render, so Dutch users never see English first.
+  loader: () => ({ lang: readInitialLanguage() }),
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -109,8 +112,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  const lang = Route.useLoaderData({ select: (d) => d?.lang }) ?? "en";
   return (
-    <html lang="en">
+    <InitialLanguageContext.Provider value={lang}>
+    <html lang={lang}>
       <head>
         <HeadContent />
       </head>
@@ -119,6 +124,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <Scripts />
       </body>
     </html>
+    </InitialLanguageContext.Provider>
   );
 }
 

@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from "react";
+import { createContext, useContext, useSyncExternalStore } from "react";
 import { storageService } from "@/services/storageService";
 import { en, type Dictionary } from "./en";
 import { nl } from "./nl";
@@ -18,8 +18,19 @@ export type Localized<T> = Partial<Record<Language, T>>;
 const DICTIONARIES: Record<Language, Dictionary> = { en, nl };
 const DEFAULT: Language = "en";
 const STORAGE_KEY = "language";
+/** Cookie mirror of the saved choice so the server can render the right language first. */
+export const LANGUAGE_COOKIE = "randodle-lang";
 
-const isLanguage = (v: unknown): v is Language => LANGUAGES.some((l) => l.code === v);
+export const isLanguage = (v: unknown): v is Language => LANGUAGES.some((l) => l.code === v);
+
+/** Language the server rendered with; the first client render must match it. */
+export const InitialLanguageContext = createContext<Language>("en");
+
+function writeCookie(lang: Language) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${LANGUAGE_COOKIE}=${lang}; path=/; max-age=31536000; samesite=lax`;
+}
+
 
 let current: Language = DEFAULT;
 let loaded = false;
@@ -31,6 +42,7 @@ export function getLanguage(): Language {
     loaded = true;
     const stored = storageService.read<unknown>(STORAGE_KEY, DEFAULT);
     current = isLanguage(stored) ? stored : DEFAULT;
+    if (isLanguage(stored)) writeCookie(stored); // existing users: keep the cookie in sync
   }
   return current;
 }
@@ -39,6 +51,7 @@ export function setLanguage(lang: Language): void {
   current = lang;
   loaded = true;
   storageService.write(STORAGE_KEY, lang);
+  writeCookie(lang);
   listeners.forEach((fn) => fn());
 }
 
@@ -48,7 +61,8 @@ function subscribe(fn: () => void) {
 }
 
 export function useLanguage(): Language {
-  return useSyncExternalStore(subscribe, getLanguage, () => DEFAULT);
+  const initial = useContext(InitialLanguageContext);
+  return useSyncExternalStore(subscribe, getLanguage, () => initial);
 }
 
 export function useTranslation() {
