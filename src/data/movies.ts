@@ -1,6 +1,7 @@
 import type { Clue, Puzzle } from "@/types/game";
 import { MOVIE_CLUES } from "@/data/movieClues";
 import { MOVIE_LIST, moviePosterUrl, type Movie } from "@/data/movieList";
+import { MOVIE_ALIASES } from "@/data/movieAliases";
 
 /** A Movie Game puzzle: one real film from MOVIE_LIST, guessed from its poster. */
 export interface MoviePuzzle extends Puzzle {
@@ -33,7 +34,7 @@ function buildClues(id: string): Clue[] {
 export const MOVIE_PUZZLES: MoviePuzzle[] = MOVIE_LIST.map((m) => ({
   id: m.id,
   answer: m.title.en,
-  aliases: m.title.nl !== m.title.en ? [m.title.nl] : [],
+  aliases: [...(m.title.nl !== m.title.en ? [m.title.nl] : []), ...(MOVIE_ALIASES[m.id] ?? [])],
   title: m.title,
   posterUrl: moviePosterUrl(m),
   clues: buildClues(m.id),
