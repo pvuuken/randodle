@@ -1,8 +1,13 @@
 /**
  * Pinned daily puzzles (UTC day key → puzzle id). Dates here never change,
- * even when puzzle pools are edited. Dates 2026-01-01..2026-10-01 freeze the
+ * even when puzzle pools are edited. Dates 2026-01-01..2026-10-06 freeze the
  * puzzles players already got. Later dates use stable rendezvous hashing
- * (src/engine/puzzleSchedule.ts); append entries here to pin more dates.
+ * (src/engine/puzzleSchedule.ts).
+ *
+ * MAINTENANCE: before adding, removing or editing ANY puzzle, first append
+ * every date played since the last entry below, copying the puzzle id that
+ * getDailyGame() returns for it right now. Otherwise those past days may
+ * resolve to a different puzzle after the edit.
  */
 export const DAILY_SCHEDULE: Record<string, string> = {
   "2026-01-01": "snow-white-and-the-seven-dwarfs-1937",
@@ -279,4 +284,10 @@ export const DAILY_SCHEDULE: Record<string, string> = {
   "2026-09-29": "country-003",
   "2026-09-30": "year-055",
   "2026-10-01": "hol-005",
+  // Frozen 2026-10-06 (pre-beta) from the live rendezvous result for each date.
+  "2026-10-02": "flag-024",
+  "2026-10-03": "halloween-1978",
+  "2026-10-04": "country-019",
+  "2026-10-05": "year-064",
+  "2026-10-06": "hol-030",
 };
